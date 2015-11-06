@@ -1,0 +1,251 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <!-- Charsets and others -->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Page Info -->
+    <title>ProxMate</title>
+
+    <!-- Fonts -->
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,300,700|Montserrat:400,700' rel='stylesheet'
+          type='text/css'>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../../bower_components/bootstrap/bootstrap.min.css">
+    <script src="../../bower_components/jquery/dist/jquery.js"></script>
+    <script src="../../bower_components/jquery/dist/jquery.mCustomScrollbar.concat.min.js"></script>
+    <script src="../../bower_components/bootstrap/bootstrap.min.js"></script>
+
+    <script src="../../bower_components/angular/angular.js"></script>
+    <script src="../../bower_components/angular-route/angular-route.js"></script>
+    <script src="../../src/pages/services/chrome.js"></script>
+    <script src="../../src/pages/popup.js"></script>
+
+    <link rel="stylesheet" href="css/popup.css">
+</head>
+<body ng-app="proxmateApp" ng-controller="PopupCtrl">
+<header>
+    <div class="pull-left">
+        <img src="../../ressources/images/logo-on-red.svg" alt="Proxmate"/>
+    </div>
+    <div class="pull-right">
+        <div class="onoffswitch">
+            <input ng-if="subscription_status == 'subscription_expired'" type="checkbox" name="weonoffswitch" disabled class="onoffswitch-checkbox" id="myonoffswitch">
+            <input ng-if="subscription_status != 'subscription_expired'"type="checkbox" name="weonoffswitch" ng-click="toggleProxmate()" ng-checked="proxmateStatus" class="onoffswitch-checkbox" id="myonoffswitch">
+            <label class="onoffswitch-label" for="myonoffswitch">
+                <span class="onoffswitch-inner"></span>
+                <span class="onoffswitch-switch"></span>
+            </label>
+        </div>
+    </div>
+    <div class="clear"></div>
+</header>
+
+<div id="content" class="carousel slide">
+    <div class="carousel-inner">
+
+        <!-- Home -->
+        <div class="item active" id="home" ng-controller="MessageCtrl">
+            <h1 ng-if="subscription_status == 'subscription_expired'">Account Expired!</h1>
+            <h1 ng-if="subscription_status != 'subscription_expired' && ( messages.unread.length == 0 && messages.sticky.length == 0 )">No New Messages!</h1>
+            <h1 ng-if="subscription_status != 'subscription_expired' && ( messages.unread.length > 0 || messages.sticky.length > 0 )">New Messages!</h1>
+            <div>
+                <div ng-repeat="message in messages.sticky" class="card message">
+                    <div class="pull-right">
+                        <a href="#" ng-click="closeMessage(message.timestamp)" class="close"><span class="glyphicon glyphicon-remove"></span></a>
+                    </div>
+                    <p>
+                        <a style="cursor: pointer" href="#" ng-click="openTab(message.url)">
+                            <strong>{{message.title}}</strong>
+                            {{message.content}}
+                            <img src="../../ressources/images/2arrows-right.svg" alt="Read more"/>
+                        </a>
+                    </p>
+                </div>
+                <div ng-repeat="message in messages.unread" class="card message">
+                    <div class="pull-right">
+                        <a href="#" class="close"><span class="glyphicon glyphicon-remove"></span></a>
+                    </div>
+                    <p>
+                        <a style="cursor: pointer" href="#" ng-click="openTab(message.url)">
+                            <strong>{{message.title}}</strong>
+                            {{message.content}}
+                            <img src="../../ressources/images/2arrows-right.svg" alt="Read more"/>
+                        </a>
+                    </p>
+                </div>
+            </div>
+            <hr>
+
+            <div ng-if="subscription_status == 'trial' || subscription_status == 'subscription_canceled'  || subscription_status == 'subscription_expired'" class="btn-wrap">
+                <a href="#" ng-click="openTab('https://web.proxmate.me/pricing/')"
+                   class="btn btn-action btn-red btn-crown">Upgrade</a>
+            </div>
+
+            <hr ng-if="subscription_status == 'trial' || subscription_status == 'subscription_canceled'  || subscription_status == 'subscription_expired'">
+
+            <div class="btn-wrap">
+                <a ng-click="openTab('https://web.proxmate.me/channels/')"
+                   class="btn btn-action btn-grey btn-remote">Channels</a>
+            </div>
+
+            <hr>
+
+            <div class="btn-wrap">
+                <a ng-click="openTab('https://prox-mate.zendesk.com/')"
+                   class="btn btn-action btn-grey btn-tool">Support</a>
+            </div>
+
+        </div>
+
+        <!-- Netflix -->
+        <div class="item" id="netflix">
+            <div ng-if="subscription_status == 'trial' || subscription_status == 'subscription_canceled' || subscription_status == 'subscription_expired'" class="btn-wrap">
+                <a href="#" ng-click="openTab('https://web.proxmate.me/pricing/')"
+                   class="btn btn-action btn-red btn-crown">Upgrade</a>
+            </div>
+
+            <hr>
+
+            <h1>Choose your<br/> Netflix Country</h1>
+
+            <div class="selector" ng-controller="PopupCtrl">
+                <ul>
+                    <li ng-repeat="country in netflix_countries">
+                        <div class="flag">
+                            <img src="/ressources/images/flags/{{ country.flag }}.png" alt="{{country.title}}"/>
+                        </div>
+                        <div class="name">{{ country.title }}</div>
+                        <div class="btn-wrap" ng-if="subscription_status != 'subscription_expired'" ng-click="selectCountry(country)">
+
+                            <div ng-if="country.short_hand === netflix_selected_country">
+                                <a href="#" class="btn btn-default">Selected</a>
+                            </div>
+                            <div ng-if="country.short_hand != netflix_selected_country">
+                                <a href="#" class="btn btn-red">Select</a>
+                            </div>
+
+
+                        </div>
+                        <div class="btn-wrap" ng-if="subscription_status == 'subscription_expired'" ng-click="openTab('https://web.proxmate.me/pricing/')">
+                            <div>
+                                <a href="#" class="btn btn-red">Upgrade</a>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- Features -->
+        <div class="item" id="features">
+
+            <h1>The Good Stuff</h1>
+
+            <div class="features-list">
+                <ul>
+                    <li>150+ channels</li>
+                    <li>Access Netflix in 14 countries</li>
+                    <li>24/7 support</li>
+                    <li>Unlimited bandwidth</li>
+                    <li>Unlimited data transfer</li>
+                    <li>No logging of data</li>
+                    <li>No ads</li>
+                    <li>Open source</li>
+                </ul>
+            </div>
+
+            <div ng-if="subscription_status == 'trial' || subscription_status == 'subscription_canceled'" class="btn-wrap">
+                <a href="#" ng-click="openTab('https://web.proxmate.me/pricing/')"
+                   class="btn btn-action btn-red btn-crown">Upgrade</a>
+            </div>
+
+        </div>
+
+        <!-- Account -->
+        <div class="item" id="account">
+            <p ng-if="subscription_status == 'trial'" class="emphasize">Your free trial expires in</p>
+            <p ng-if="subscription_status == 'subscribed'" class="emphasize">Active subscription</p>
+            <p ng-if="subscription_status == 'unlimited'" class="emphasize">Active subscription</p>
+            <p ng-if="subscription_status == 'subscription_canceled'" class="emphasize">Your subscription ends on:</p>
+            <p ng-if="subscription_status == 'subscription_expired'" class="emphasize">Subscription status:</p>
+
+            <p ng-if="subscription_status == 'trial'" class="important">{{remainingTime}}</p>
+            <p ng-if="subscription_status == 'subscribed'" class="important">{{subscription_name}}</p>
+            <p ng-if="subscription_status == 'unlimited'" class="important">Unlimited</p>
+            <p ng-if="subscription_status == 'subscription_canceled'" style="font-size: 2em; padding: 10px" class="important">{{next_payment}}</p>
+            <p ng-if="subscription_status == 'subscription_expired'" class="important">Exired</p>
+
+            <p ng-if="subscription_status == 'trial'" class="important-less">{{remainingTime_unit}}</p>
+
+            <p ng-if="payment_status != 'pending' && subscription_status == 'subscribed'" class="important-less" style="font-size: 12px">Next payment: {{next_payment}}</p>
+            <p ng-if="payment_status != 'pending' && subscription_status == 'subscription_canceled'" class="important-less" style="font-size: 12px">Account Status: Active</p>
+            <!--<p ng-if="payment_status == 'pending'" class="important-less" style="font-size: 12px">Payment Waiting</p>-->
+            <p ng-if="payment_status == 'pending'" class="important-less" style="font-size: 12px">Account Status: Active</p>
+            <p ng-if="subscription_status == 'subscription_expired'" class="important-less" style="font-size: 12px">Please upgrade to continue to use Proxmate</p>
+
+            <hr ng-if="user_email">
+
+            <p ng-if="user_email" class="emphasize">Registered E-mail:</p>
+
+            <div style="Font-size: 15px;color: #be3a34;" class="email">
+                <p>{{ user_email }}</p>
+            </div>
+
+            <hr ng-if="subscription_status == 'trial' || subscription_status == 'subscription_canceled' || subscription_status == 'subscription_expired'">
+
+            <div ng-if="subscription_status == 'trial' || subscription_status == 'subscription_canceled' || subscription_status == 'subscription_expired'" class="btn-wrap">
+                <a href="#" ng-click="openTab('https://web.proxmate.me/pricing/')"
+                   class="btn btn-action btn-red btn-crown">Upgrade</a>
+            </div>
+
+            <!--<hr ng-if="subscription_supplier == 'stripe' && ( subscription_status == 'subscription_canceled' || subscription_status == 'subscription_expired')">
+
+            <div ng-if="( subscription_status != 'subscription_canceled' || subscription_status != 'subscription_expired' ) && subscription_supplier == 'stripe'" class="btn-wrap">
+                <a href="#" ng-click="update_card()" class="btn btn-action btn-grey btn-pencil">Update Credit Card</a>
+            </div>-->
+
+            <hr ng-if="subscription_supplier != 'paypal'">
+
+            <p ng-if="subscription_status != 'subscription_canceled' && ( subscription_supplier == 'stripe' || subscription_supplier == 'paypal' )" class="cancel">
+                <a href="#" ng-click="unsubscribe()">Cancel my subscription</a>
+            </p>
+
+        </div>
+    </div>
+</div>
+
+<footer>
+    <ul>
+        <li class="home active">
+            <a href="#" data-target="#carosuel-example-generic" data-slide-to="0">
+                <img src="../../ressources/images/home.svg" class="red" alt="Home"/>
+                <img src="../../ressources/images/home-white.svg" class="white" alt="Home"/>
+            </a>
+        </li>
+        <li class="netflix">
+            <a href="#" data-target="#carousel-example-generic" data-slide-to="1">
+                I <img src="../../ressources/images/heart-red.svg" class="red" alt="Love"/> <img
+                    src="../../ressources/images/heart-white.svg" class="white" alt="Love"/> Netflix
+            </a>
+        </li>
+        <li class="features">
+            <a href="#" data-target="#content" data-slide-to="2">
+                Features
+            </a>
+        </li>
+        <li class="account">
+            <a href="#" data-target="#content" data-slide-to="3">
+                Account
+            </a>
+        </li>
+        <div class="clear"></div>
+    </ul>
+</footer>
+
+</body>
+</html>

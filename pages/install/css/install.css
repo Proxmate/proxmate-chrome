@@ -1,0 +1,128 @@
+body {
+  color: #707372;
+  font-family: 'Roboto', sans-serif;
+  overflow-x: hidden;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Montserrat', sans-serif;
+}
+
+.feedback {
+  margin-top: 2em;
+}
+.feedback p {
+  text-align: left;
+  padding: 1em;
+  margin-bottom: 0;
+}
+html, body {
+  height: 100%;
+}
+
+a {
+  color: #be3a34;
+}
+
+.btn-amber {
+  background: #ee9d26;
+  color: #fff;
+  transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s
+}
+.btn-amber:hover,
+.btn-amber:focus,
+.btn-amber:active {
+  background: #f8ab39;
+  color: #fff;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+}
+
+.transactional {
+  background: #eee url(../img/email-signup.svg) center bottom no-repeat;
+  background-size: 30vh;
+  background-position: 97% 100%;
+}
+.transactional header {
+  padding: 1em 0;
+  background: url(../img/white.jpg) repeat;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+.transactional header img {
+  height: 4em;
+}
+.transactional section {
+  box-shadow: none;
+}
+.transactional footer {
+  background: url(../img/white.jpg) repeat;
+  width: 100%;
+  position: fixed;
+  border-top: 1px solid #ccc;
+  padding: 1em 0;
+  bottom: 0;
+}
+.transactional footer p {
+  margin-bottom: 0;
+}
+.transactional footer .copyright {
+  text-align: right;
+}
+
+.post-install h2 {
+  text-align: center;
+  color: #be3a34;
+  text-transform: uppercase;
+  font-size: 2em;
+  font-weight: bold;
+}
+.post-install section {
+  padding-top: 5em;
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: 30vh;
+}
+.post-install input,
+.post-install textarea {
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+.post-install input:focus,
+.post-install textarea:focus {
+  border: 1px solid #ccc;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+}
+.post-install p.disclaimer {
+  margin-top: 1em;
+  font-size: .8em;
+}
+.post-install p.feedback {
+  text-align: left;
+  font-size: 1.2em;
+}
+.post-install a {
+  -moz-transition-duration: 0.2s;
+  -webkit-transition-duration: 0.2s;
+  -o-transition-duration: 0.2s;
+  transition-duration: 0.2s;
+}
+.post-install a:hover {
+  text-decoration: none;
+}
+.post-install form {
+  width: 80%;
+  margin: 0 auto;
+}
+.post-install .large-image {
+  text-align: center;
+  margin-top: 5em;
+}
+.post-install .large-image img {
+  height: 20em;
+}
+.post-install .btn-cta {
+  font-size: 1em;
+  margin-bottom: 2em;
+}

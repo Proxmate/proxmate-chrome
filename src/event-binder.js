@@ -1,0 +1,133 @@
+(function () {
+    var MessageManager, Browser, ServerManager, EventBinder, PackageManager, Runtime, Storage, Status;
+
+    Browser = require('./browser').Browser;
+
+    PackageManager = require('./package-manager').PackageManager;
+
+    ServerManager = require('./server-manager').ServerManager;
+
+    Storage = require('./storage').Storage;
+
+    Runtime = require('./runtime').Runtime;
+
+    Status = require('./status').Status;
+
+    MessageManager = require('./message-manager').MessageManager;
+
+    EventBinder = (function () {
+        function EventBinder() {
+        }
+
+        EventBinder.prototype.init = function () {
+            return Browser.addEventListener(this.messageListener);
+        };
+
+        /**
+         * Event listener for chrome message events
+         * @param  {Object} request      request and parameters
+         * @param  {Object} sender       sender object
+         * @param  {Function} sendResponse callback to emit answer back to frontend
+         * @return {boolean}              status whether to keep the connection open or not
+         */
+
+        EventBinder.prototype.messageListener = function (request, sender, sendResponse) {
+            var key, newStatus, packageId, packages, params, status;
+            params = request.params;
+            switch (request.action) {
+                case 'activatePlugin':
+                    Runtime.activatePlugin(params.activation_code, function (response) {
+                        return sendResponse(response);
+                    });
+                    break;
+                case 'checkInstall':
+                    sendResponse(true)
+                    break;
+                case 'installPackage':
+                    PackageManager.installPackage(params.packageId, function (response) {
+                        return sendResponse(response);
+                    });
+                    break;
+                case 'getProxmateGlobalStatus':
+                    status = Storage.get('proxmate_global_status');
+                    if (status) {
+                        sendResponse(status);
+                    } else {
+                        sendResponse(false);
+                    }
+                    break;
+                case 'setProxmateGlobalStatus':
+                    newStatus = params.newStatus;
+                    if (typeof newStatus !== 'boolean') {
+                        newStatus = false;
+                    }
+                    Storage.set('proxmate_global_status', newStatus);
+                    if (newStatus) {
+                        Runtime.start();
+                    } else {
+                        Runtime.stop();
+                    }
+                    sendResponse(true);
+                    break;
+                case 'getInstalledPackages':
+                    packages = PackageManager.getInstalledPackages();
+                    sendResponse(packages);
+                    break;
+                case 'removePackage':
+                    packageId = params.packageId;
+                    PackageManager.removePackage(packageId);
+                    sendResponse(true);
+                    break;
+                case 'getApiKey':
+                    key = Storage.get('api_key');
+                    sendResponse(key);
+                    break;
+                case 'updateStatus':
+                    Status.update(function (response) {
+                        response.api_key = Storage.get('api_key');
+                        return sendResponse(response);
+                    });
+                    break;
+                case 'requestActivation':
+                    Runtime.requestActivation(params.email, function (response) {
+                        return sendResponse(response);
+                    });
+                    break;
+                case 'getNetflixCountries':
+                    return sendResponse(PackageManager.getNetflixCountries());
+                    break;
+                case 'selectNetflixCountry':
+                    return sendResponse(PackageManager.selectNetflixCountry(params.country));
+                    break;
+                case 'selectNetflix':
+                    PackageManager.selectNetflixCountry({short_hand: params.country})
+                    return sendResponse(true);
+                    break;
+                case 'showMessages':
+                    var msg = MessageManager.show();
+                    sendResponse(msg);
+                    break;
+                case 'closeMessage':
+                    var msg = MessageManager.closeMessage(params.id);
+                    sendResponse(msg);
+                    break;
+                case 'getStatus':
+                    status = Storage.get('subscription_status');
+                    sendResponse(status);
+                    break;
+                case 'checkForUpdates':
+                    ServerManager.fetchServerList(function () {
+                        PackageManager.checkForUpdates();
+                    });
+                    sendResponse(true);
+            }
+            return true;
+        };
+
+        return EventBinder;
+
+    })();
+
+    exports.EventBinder = new EventBinder();
+
+}).call(this);

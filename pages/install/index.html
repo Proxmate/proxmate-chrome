@@ -1,0 +1,103 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <!-- Charsets and others -->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Page Info -->
+    <title>Sign Up - ProxMate</title>
+
+    <!-- Fonts -->
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,300,700|Montserrat:400,700' rel='stylesheet'
+          type='text/css'>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <script src="../../bower_components/jquery/dist/jquery.js"></script>
+    <script src="../../bower_components/angular/angular.js"></script>
+    <script src="../../bower_components/angular-route/angular-route.js"></script>
+    <script src="../../src/pages/services/chrome.js"></script>
+    <script src="../../src/pages/install.js"></script>
+    <link rel="stylesheet" href="css/install.css">
+</head>
+<body class="post-install transactional" ng-app="proxmateApp" ng-controller="InstallCtrl">
+
+<header>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <a href="/">
+                    <img src="img/logo.svg" alt="ProxMate"/>
+                </a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<section>
+
+    <div class="container step1">
+        <h2>Get your account</h2>
+
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 col-sm-offset-3">
+                <p class="feedback">
+                    <strong style="color: #be3a34;">NEW USERS</strong> enter your email below for your 14 day free trial. An activation link will be sent to your inbox
+                    (don't forget to check your junk folder!)
+                </p>
+                <p class="feedback">
+                    <strong style="color: #be3a34;">EXISTING USERS</strong> enter your email below and a re-activation link will be sent to your inbox (don't forget to
+                    check your junk folder!)
+                </p>
+            </div>
+        </div>
+        <div class="row">
+            <div style="margin-top: 2em" class="col-xs-12 col-sm-6 col-sm-offset-3">
+                <form>
+                    <div class="input-group">
+                        <input type="text" id="email-field" class="form-control" placeholder="Your e-mail"/>
+                                    <span class="input-group-btn">
+                                        <input type="submit" class="btn btn-amber submit-button" value="SUBMIT"/>
+                                    </span>
+                    </div>
+                </form>
+                <p class="text-center disclaimer">
+                    By submitting your e-mail, you accept the <a href="https://web.proxmate.me/terms">Terms and
+                    Conditions</a> and confirm
+                    you have read the <a href="https://web.proxmate.me/privacy">Privacy Policy</a>.
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="container step2" style="display: none; padding-top: 80px">
+        <h2>Thank you for choosing Proxmate!</h2>
+
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 col-sm-offset-3">
+                <p class="feedback" style="line-height: 30px;">
+                    We've sent a link to your e-mail in order to authenticate your account.<br/>
+                    Hurry though, the link will self destruct in 2 hours!<br/>
+                    (Don't forget to check your junk folder if you can't find it)
+                </p>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-8">
+                <p>PROXMATE UNBLOCKS YOUR FAVORITE MOVIES, MUSIC, SPORTS AND MORE.</p>
+            </div>
+            <div class="col-xs-4 copyright">Copyright &copy; 2015 ProxMate</div>
+        </div>
+    </div>
+</footer>
+</body>
+</html>

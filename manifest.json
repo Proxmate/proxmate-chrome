@@ -1,0 +1,54 @@
+{
+  "manifest_version": 2,
+  "name": "Proxmate",
+  "version": "4.2.9",
+  "description": "Proxmate unblocks your favourite movies, music, sports and more",
+
+  "background": {
+    "page": "background.html"
+  },
+  "homepage_url": "https://web.proxmate.me/",
+  "browser_action": {
+    "default_title": "Click to open Proxmate quick menu",
+    "default_icon": "ressources/images/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*/**"],
+      "js": [
+        "bower_components/jquery/dist/jquery.js",
+        "src/page-worker/services/proxmate.js",
+        "src/page-worker/proxmatecs.js"
+      ],
+      "run_at": "document_end"
+    },
+    {
+      "matches": ["*://*.proxmate.me/*", "http://192.168.100.10/*"],
+      "js": [
+        "bower_components/jquery/dist/jquery.js",
+        "bower_components/moment/dist/moment.js",
+        "src/page-worker/proxmate.js"
+      ]
+    }
+  ],
+  "icons": {
+    "48": "ressources/images/icon48.png",
+    "24": "ressources/images/icon24.png",
+    "16": "ressources/images/icon16.png",
+    "128": "ressources/images/icon128.png"
+   },
+   "web_accessible_resources": [
+    "*"
+  ],
+  "permissions": [
+    "webRequest",
+    "webRequestBlocking",
+    "proxy",
+    "*://*/",
+    "tabs",
+    "webNavigation",
+    "storage",
+    "notifications"
+  ],
+  "content_security_policy": "script-src 'self' 'unsafe-eval' https://ssl.google-analytics.com; object-src 'self'"
+}
