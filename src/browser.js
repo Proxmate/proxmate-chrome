@@ -143,7 +143,7 @@
         };
 
         /**
-         * Performs a xmlhttprequest
+         * Performs a GET xmlhttprequest
          * @param  {string} url             the url to request
          * @param  {string} type            POST or GET
          * @param  {Function} successCallback callback
@@ -168,6 +168,15 @@
 
         Browser.prototype.ajax = {};
 
+
+         /**
+         * Performs a PUT xmlhttprequest
+         * @param  {string} url             the url to request
+         * @param  {object} data            data to be sent to server
+         * @param  {Function} successCallback callback
+         * @param  {Function} errorCallback   callback
+         */
+
         Browser.prototype.ajax.PUT = function (url, data, successCallback, errorCallback) {
             if (successCallback == null) {
                 successCallback = function () {
@@ -184,6 +193,15 @@
                 error: errorCallback
             });
         };
+
+
+         /**
+         * Performs a POST xmlhttprequest
+         * @param  {string} url             the url to request
+         * @param  {object} data            data to be sent to server
+         * @param  {Function} successCallback callback
+         * @param  {Function} errorCallback   callback
+         */
 
         Browser.prototype.ajax.POST = function (url, data, successCallback, errorCallback) {
             if (successCallback == null) {

@@ -16,6 +16,10 @@
         function App() {
         }
 
+        /**
+         * Initialise all the modules
+         */
+
         App.prototype.init = function () {
 
             Browser.init();
