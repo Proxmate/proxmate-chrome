@@ -34,7 +34,7 @@ module.exports = function (grunt) {
         watch: {
             js: {
                 files: ['src/**/*.js'],
-                tasks: ['copy:src', 'karma']
+                tasks: ['copy:src', 'browserify:src' ,'karma']
             },
             test: {
                 files: ['test/**/*.coffee'],
@@ -213,25 +213,20 @@ module.exports = function (grunt) {
         'copy:src',
         'browserify:src',
         'browserify:test'
-    ])
-
-    // Register commands
-    grunt.registerTask('ctjs', [
-        'coffee:src1',
-    ])
+    ]);
 
     grunt.registerTask('build', [
         'clean:build',
         'clean:dist',
 
-        //'ngmin:build',
+        'ngmin:build',
         'copy:dist',
 
         'browserify:dist',
-        //'uglify:dist',
-        //'closurecompiler:dist',
-        //'cssmin:dist',
-        //'htmlmin:dist',
+        'uglify:dist',
+        'closurecompiler:dist',
+        'cssmin:dist',
+        'htmlmin:dist',
         'clean:build'
     ])
 
