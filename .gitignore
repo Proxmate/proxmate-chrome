@@ -1,0 +1,15 @@
+build/
+*.xpi
+*.crx
+build.pem
+*.zip
+.idea
+node_modules/
+bower_components/
+codekit-config.json
+app/
+dist/
+*.pem
+.tmp/
+*.nex
+tmp/

@@ -36,6 +36,11 @@
             var api_key, status_check, _today, checkUrl, server;
 
             api_key = Storage.get('api_key');
+
+            if(! api_key ) {
+                return
+            }
+
             server = Config.get('primary_server');
             checkUrl = "" + server + "api/status/" + api_key + "/";
             status_check = Storage.get('status_check');
@@ -61,6 +66,11 @@
             var api_key, status_check, _today, checkUrl, server;
 
             api_key = Storage.get('api_key');
+
+            if(! api_key ) {
+                return
+            }
+
             server = Config.get('primary_server');
             checkUrl = "" + server + "api/status/" + api_key + "/";
 

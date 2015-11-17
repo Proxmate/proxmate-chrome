@@ -209,8 +209,7 @@
                 <a href="#" ng-click="update_card()" class="btn btn-action btn-grey btn-pencil">Update Credit Card</a>
             </div>-->
 
-            <hr ng-if="subscription_supplier != 'paypal'">
-
+            <hr ng-if="subscription_status != 'subscription_canceled' && ( subscription_supplier == 'stripe' || subscription_supplier == 'paypal' )">
             <p ng-if="subscription_status != 'subscription_canceled' && ( subscription_supplier == 'stripe' || subscription_supplier == 'paypal' )" class="cancel">
                 <a href="#" ng-click="unsubscribe()">Cancel my subscription</a>
             </p>

@@ -1344,7 +1344,7 @@ header img {
 hr {
     border-top: 1px solid #cfd0d0;
     margin-top: 15px;
-    margin-bottom: 15px
+    margin-bottom: 10px
 }
 
 .clear {
@@ -1656,7 +1656,7 @@ footer ul li img {
 
 #content .item {
     padding: 10px;
-    height: 380px
+    height: 420px
 }
 
 #netflix h1 {
