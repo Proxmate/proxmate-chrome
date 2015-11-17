@@ -162,6 +162,7 @@
 
             this.stop();
 
+            Browser.setIcon("ressources/images/icon48.png");
             return ServerManager.init((function (_this) {
                 return function () {
                     PackageManager.init();

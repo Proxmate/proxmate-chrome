@@ -10,6 +10,7 @@
         }
         return ProxMate.getInstalledPackages(function (packages) {
             var contentScript, pkg, pkghost, regex, regexObject, _i, _len, _results;
+            ProxMate.dailyActiveCheck();
             _results = [];
             for (_i = 0, _len = packages.length; _i < _len; _i++) {
                 pkg = packages[_i];
@@ -23,6 +24,7 @@
                         regex = regex.replace(/\*/g, ".*");
                         regexObject = new RegExp("^" + regex + "$", "g");
                         if (host.search(regexObject) !== -1) {
+                            ProxMate.dailyChannelCheck();
                             _results1.push((function () {
                                 var _k, _len2, _ref1, _results2;
                                 _ref1 = pkg.contentScripts;

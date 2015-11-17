@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Proxmate",
-  "version": "4.2.9",
+  "version": "4.3.0",
   "description": "Proxmate unblocks your favourite movies, music, sports and more",
 
   "background": {
@@ -23,7 +23,7 @@
       "run_at": "document_end"
     },
     {
-      "matches": ["*://*.proxmate.me/*", "http://192.168.100.10/*"],
+      "matches": ["*://*.proxmate.me/*"],
       "js": [
         "bower_components/jquery/dist/jquery.js",
         "bower_components/moment/dist/moment.js",

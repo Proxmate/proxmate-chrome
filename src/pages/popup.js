@@ -26,7 +26,7 @@
                     $scope.messages = response;
                     $scope.$apply();
                 })
-            }
+            };
 
 
             $scope.closeMessage = function (id) {
@@ -173,18 +173,23 @@
             $scope.selectCountry = function (country) {
                 Chrome.selectNetflixCountry(country, function (response) {
                     $scope.netflix_selected_country = response.selected;
+
+                    // Correct the flags to be correctly named after the Country short_hand
+                    // Country short_hand naming convention is XX_hulu XX being the country, e.g. US_hulu
                     for (var i = 0; i < response.package.additional_countries.length; i++) {
                         response.package.additional_countries[i].flag = response.package.additional_countries[i].short_hand.slice(0, 2)
                     }
 
-
+                    // Sort alphabetically
                     response.package.additional_countries.sort(function (a, b) {
                         if (a.title < b.title) return -1;
                         if (a.title > b.title) return 1;
                         return 0;
                     });
 
+                    // Correct some naming conventions and put US and UK in top if the list
                     for (var i = 0; i < response.package.additional_countries.length; i++) {
+                        // Remove Netflix from the countries names
                         response.package.additional_countries[i].title = response.package.additional_countries[i].title.replace("Netflix", " ");
 
                         response.package.additional_countries[i].flag = response.package.additional_countries[i].short_hand.slice(0, 2)

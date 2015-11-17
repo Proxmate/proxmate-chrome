@@ -81,6 +81,11 @@
                 case 'getApiKey':
                     key = Storage.get('api_key');
                     sendResponse(key);
+                case 'dailyChannelCheck':
+                    Status.dailyChannelCheck();
+                    break;
+                case 'dailyActiveCheck':
+                    Status.dailyActiveCheck();
                     break;
                 case 'updateStatus':
                     Status.update(function (response) {

@@ -55,7 +55,7 @@
             <div>
                 <div ng-repeat="message in messages.sticky" class="card message">
                     <div class="pull-right">
-                        <a href="#" ng-click="closeMessage(message.timestamp)" class="close"><span class="glyphicon glyphicon-remove"></span></a>
+                        <a ng-if="message.is_closable" href="#" ng-click="closeMessage(message.timestamp)" class="close"><span class="glyphicon glyphicon-remove"></span></a>
                     </div>
                     <p>
                         <a style="cursor: pointer" href="#" ng-click="openTab(message.url)">
@@ -67,7 +67,7 @@
                 </div>
                 <div ng-repeat="message in messages.unread" class="card message">
                     <div class="pull-right">
-                        <a href="#" class="close"><span class="glyphicon glyphicon-remove"></span></a>
+                        <a ng-if="message.is_closable" href="#" ng-click="closeMessage(message.timestamp)" class="close"><span class="glyphicon glyphicon-remove"></span></a>
                     </div>
                     <p>
                         <a style="cursor: pointer" href="#" ng-click="openTab(message.url)">

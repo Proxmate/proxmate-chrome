@@ -38,6 +38,10 @@
             })(this), 1000);
         };
 
+        /**
+         * Retrieves the chrome HDD storage into RAM storage
+         */
+
         Storage.prototype.copyFromChromeStorage = function (callback) {
             return Browser.retrieveFromStorage(null, (function (_this) {
                 return function (object) {
