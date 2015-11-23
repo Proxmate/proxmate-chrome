@@ -80,12 +80,12 @@
             </div>
             <hr>
 
-            <div ng-if="subscription_status == 'trial' || subscription_status == 'subscription_canceled'  || subscription_status == 'subscription_expired'" class="btn-wrap">
+            <div ng-if="subscription_status == 'trial' || subscription_status == 'subscription_canceled' || subscription_status == 'subscription_expired'" class="btn-wrap">
                 <a href="#" ng-click="openTab('https://web.proxmate.me/pricing/')"
                    class="btn btn-action btn-red btn-crown">Upgrade</a>
             </div>
 
-            <hr ng-if="subscription_status == 'trial' || subscription_status == 'subscription_canceled'  || subscription_status == 'subscription_expired'">
+            <hr ng-if="subscription_status == 'trial' || subscription_status == 'subscription_canceled' || subscription_status == 'subscription_expired'">
 
             <div class="btn-wrap">
                 <a ng-click="openTab('https://web.proxmate.me/channels/')"
@@ -148,13 +148,15 @@
 
             <div class="features-list">
                 <ul>
-                    <li>150+ channels</li>
+                    <li>200+ channels</li>
                     <li>Access Netflix in 14 countries</li>
                     <li>24/7 support</li>
-                    <li>Unlimited bandwidth</li>
+                    <li>Channel unlock request service</li>
                     <li>Unlimited data transfer</li>
+                    <li>Lightning fast speed</li>
                     <li>No logging of data</li>
                     <li>No ads</li>
+                    <li>99.9% server uptime</li>
                     <li>Open source</li>
                 </ul>
             </div>
@@ -178,7 +180,7 @@
             <p ng-if="subscription_status == 'subscribed'" class="important">{{subscription_name}}</p>
             <p ng-if="subscription_status == 'unlimited'" class="important">Unlimited</p>
             <p ng-if="subscription_status == 'subscription_canceled'" style="font-size: 2em; padding: 10px" class="important">{{next_payment}}</p>
-            <p ng-if="subscription_status == 'subscription_expired'" class="important">Exired</p>
+            <p ng-if="subscription_status == 'subscription_expired'" class="important">Expired</p>
 
             <p ng-if="subscription_status == 'trial'" class="important-less">{{remainingTime_unit}}</p>
 
@@ -209,8 +211,8 @@
                 <a href="#" ng-click="update_card()" class="btn btn-action btn-grey btn-pencil">Update Credit Card</a>
             </div>-->
 
-            <hr ng-if="subscription_status != 'subscription_canceled' && ( subscription_supplier == 'stripe' || subscription_supplier == 'paypal' )">
-            <p ng-if="subscription_status != 'subscription_canceled' && ( subscription_supplier == 'stripe' || subscription_supplier == 'paypal' )" class="cancel">
+            <hr ng-if="(subscription_status != 'subscription_canceled' && ( subscription_supplier == 'stripe' || subscription_supplier == 'paypal' )) && subscription_status != 'subscription_expired'">
+            <p ng-if="(subscription_status != 'subscription_canceled' && ( subscription_supplier == 'stripe' || subscription_supplier == 'paypal' )) && subscription_status != 'subscription_expired'" class="cancel">
                 <a href="#" ng-click="unsubscribe()">Cancel my subscription</a>
             </p>
 

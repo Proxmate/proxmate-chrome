@@ -33,11 +33,31 @@
         MessageManager.prototype.warnExpiry = function () {
             var days_left, messages, _exists;
 
+            // get a list of all messages
+            messages = Storage.get('messages-proxmate');
+
+            // check if is not a trial subscription to remove the messages
+            if (Status.getSubscriptionStatus() != 'trial' && Status.getSubscriptionStatus() != 'subscription_canceled') {
+                // there are no messages
+                if (!messages) {
+                    return
+                }
+                // remove the messages because it is not a trial subscription
+                for (var i = 0; i < messages.length; i++) {
+                    var _message = messages[i];
+                    if (_message.timestamp == 4 || _message.timestamp == 1 || _message.timestamp == 2) {
+                        // message existed but timing is not now
+                        messages.splice(i, 1)
+                    }
+                }
+
+                // store the new messages
+                return Storage.set('messages-proxmate', messages);
+            }
+
             // get days left of subscription
             days_left = Status.getDaysLeft();
 
-            // get a list of all messages
-            messages = Storage.get('messages-proxmate');
 
             // if message list is empty initialize with empty array
             if (!messages) {
@@ -70,7 +90,7 @@
                     messages.push(
                         {
                             timestamp: 1,
-                            title: "Your free trial expires soon1",
+                            title: "Your free trial expires soon",
                             content: "Click here to check out the plan options available",
                             has_url: true,
                             time_show: false,
@@ -81,7 +101,7 @@
                         }
                     )
                 }
-            } else if (days_left <= 2) {
+            } else if (days_left <= 2 && days_left > 0) {
                 // check for next days_left value
                 for (var i = 0; i < messages.length; i++) {
                     var _message = messages[i];
@@ -103,7 +123,7 @@
                     messages.push(
                         {
                             timestamp: 2,
-                            title: "Your free trial expires soon2",
+                            title: "Your free trial expires soon",
                             content: "Click here to check out the plan options available",
                             has_url: true,
                             time_show: false,
@@ -113,7 +133,7 @@
                             closed: false
                         })
                 }
-            } else if (days_left <= 4) {
+            } else if (days_left <= 4 && days_left > 0) {
                 // check for next days_left value
                 for (var i = 0; i < messages.length; i++) {
                     var _message = messages[i];
@@ -134,7 +154,7 @@
                     messages.push(
                         {
                             timestamp: 4,
-                            title: "Your free trial expires soon4",
+                            title: "Your free trial expires soon",
                             content: "Click here to check out the plan options available",
                             has_url: true,
                             time_show: false,

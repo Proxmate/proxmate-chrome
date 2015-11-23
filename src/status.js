@@ -32,6 +32,17 @@
             return Storage.get('subscription_status');
         };
 
+        Status.prototype.getSubscriptionStatus = function () {
+            var subscription_status;
+            subscription_status = Storage.get('subscription_status')
+
+            if(!subscription_status) {
+                return false
+            }
+
+            return subscription_status.data.subscription_status
+        };
+
         Status.prototype.dailyChannelCheck = function () {
             var api_key, status_check, _today, checkUrl, server;
 

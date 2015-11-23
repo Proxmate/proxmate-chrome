@@ -114,7 +114,8 @@
 
                 var _now = moment(new Date());
                 var _end = moment(new Date(window.ProxMate.status.plan_expiration_date * 1000));
-                if (_end.diff(_now, 'days') > 0) {
+
+                if (_end.diff(_now, 'days') > 0 && window.ProxMate.status.subscription_status != 'trial') {
                     if (_end.diff(_now, 'days') > 90) {
                         if (_end.diff(_now, 'months') < 24) {
                             $('.paypal-remaining-days.amount').val(_end.diff(_now, 'months'))
