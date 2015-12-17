@@ -102,7 +102,8 @@ module.exports = function (grunt) {
                     banner: '/*\n' +
                             '  <%= manifest.name %> version <%= manifest.version %> by Proxmate\n' +
                             '  Built on <%= grunt.template.today("yyyy-mm-dd @ HH:MM") %>\n' +
-                            '*/\n'
+                            '*/\n',
+                    max_processes: 1
                 },
                 files: [{
                     expand: true,
@@ -138,28 +139,28 @@ module.exports = function (grunt) {
         copy: {
             src: {
                 files: [{
-                        'tmp/proxmate.json': 'proxmate.json',
+                        //'tmp/proxmate.json': 'proxmate.json',
                         'tmp/manifest.json': 'manifest.json',
                         'tmp/background.html': 'background.html',
-                        'tmp/bower_components/jquery/dist/jquery.js': 'bower_components/jquery/dist/jquery.js',
+                        'tmp/bower_components/jquery/dist/jquery.js': 'bower_components/jquery/dist/jquery.min.js',
                         'tmp/bower_components/jquery/dist/jquery.mCustomScrollbar.concat.min.js': 'bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js',
-                        'tmp/bower_components/angular/angular.js': 'bower_components/angular/angular.js',
-                        'tmp/bower_components/angular-route/angular-route.js': 'bower_components/angular-route/angular-route.js',
+                        'tmp/bower_components/angular/angular.js': 'bower_components/angular/angular.min.js',
+                        'tmp/bower_components/angular-route/angular-route.js': 'bower_components/angular-route/angular-route.min.js',
                         'tmp/bower_components/angular-mocks/angular-mocks.js': 'bower_components/angular-mocks/angular-mocks.js',
                         'tmp/bower_components/foundation/css/foundation.min.css': 'bower_components/foundation/css/foundation.min.css',
                         'tmp/bower_components/foundation/css/normalize.css': 'bower_components/foundation/css/normalize.css',
                         'tmp/bower_components/bootstrap/bootstrap.min.css': 'bower_components/bootstrap/dist/css/bootstrap.min.css',
+                        'tmp/bower_components/bootstrap/bootstrap.min.js': 'bower_components/bootstrap/dist/js/bootstrap.min.js',
                         'tmp/bower_components/fonts/glyphicons-halflings-regular.eot': 'bower_components/bootstrap/fonts/glyphicons-halflings-regular.eot',
                         'tmp/bower_components/fonts/glyphicons-halflings-regular.svg': 'bower_components/bootstrap/fonts/glyphicons-halflings-regular.svg',
                         'tmp/bower_components/fonts/glyphicons-halflings-regular.ttf': 'bower_components/bootstrap/fonts/glyphicons-halflings-regular.ttf',
                         'tmp/bower_components/fonts/glyphicons-halflings-regular.woff': 'bower_components/bootstrap/fonts/glyphicons-halflings-regular.woff',
                         'tmp/bower_components/fonts/glyphicons-halflings-regular.woff2': 'bower_components/bootstrap/fonts/glyphicons-halflings-regular.woff2',
-                        'tmp/bower_components/bootstrap/bootstrap.min.js': 'bower_components/bootstrap/dist/js/bootstrap.min.js',
                         'tmp/bower_components/moment/dist/moment.js': 'bower_components/moment/min/moment.min.js',
                         'tmp/bower_components/semantic/dist/semantic.min.js': 'bower_components/semantic-ui/dist/semantic.min.js',
                         'tmp/bower_components/semantic/dist/semantic.min.css': 'bower_components/semantic-ui/dist/semantic.min.css'
                     },
-                    {expand: true, src: ['test/testdata/**'], dest: 'tmp/'},
+                    //{expand: true, src: ['test/testdata/**'], dest: 'tmp/'},
                     {expand: true, src: ['ressources/**'], dest: 'tmp/'},
                     {expand: true, src: ['pages/**'], dest: 'tmp/'},
                     {expand: true, src: ['pages/**', 'page-worker/**'], dest: 'tmp/src', cwd: 'src'},
@@ -194,6 +195,7 @@ module.exports = function (grunt) {
                     'dist/bower_components/jquery/dist/jquery.mCustomScrollbar.concat.min.js': 'bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js',
                     'dist/bower_components/angular/angular.js': 'bower_components/angular/angular.min.js',
                     'dist/bower_components/angular-route/angular-route.js': 'bower_components/angular-route/angular-route.min.js',
+                    'dist/bower_components/angular-mocks/angular-mocks.js': 'bower_components/angular-mocks/angular-mocks.js',
                     'dist/bower_components/foundation/css/foundation.min.css': 'bower_components/foundation/css/foundation.min.css',
                     'dist/bower_components/foundation/css/normalize.css': 'bower_components/foundation/css/normalize.css',
                     'dist/bower_components/bootstrap/bootstrap.min.css': 'bower_components/bootstrap/dist/css/bootstrap.min.css',
@@ -226,22 +228,23 @@ module.exports = function (grunt) {
         'clean:src',
         'copy:src',
         'browserify:src',
-        'browserify:test'
+        //'browserify:test'
     ]);
 
     grunt.registerTask('build', [
-        'clean:build',
+        //'clean:build',
         'clean:dist',
 
-        'ngmin:build',
+        //'copy:build',
+        //'ngmin:build',
         'copy:dist',
 
         'browserify:dist',
-        'uglify:dist',
+        //'uglify:dist',
         'closurecompiler:dist',
         'cssmin:dist',
         'htmlmin:dist',
-        'clean:build'
+        //'clean:build'
     ]);
 
     grunt.registerTask('serve', ['src', 'watch'])

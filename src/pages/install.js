@@ -18,8 +18,7 @@
         }
         Chrome.requestActivation(_email, function (response) {
           $('.alert-card').css('opacity', 0);
-          if (!response.success && response.error == 'user_exists') {
-          }
+          //if (!response.success && response.error == 'user_exists') {}
           $('.container.step1').hide();
           $('.container.step2').show();
         });

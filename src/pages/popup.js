@@ -126,28 +126,29 @@
       Chrome.getNetflixCountries(function (response) {
         var _callback = function () {
           $scope.netflix_selected_country = response.selected;
-          response.package.additional_countries.sort(function (a, b) {
+          var _additional_countries = response['package'].additional_countries;
+          _additional_countries.sort(function (a, b) {
             if (a.title < b.title)
               return -1;
             if (a.title > b.title)
               return 1;
             return 0;
           });
-          for (var i = 0; i < response.package.additional_countries.length; i++) {
-            response.package.additional_countries[i].title = response.package.additional_countries[i].title.replace('Netflix', ' ');
-            response.package.additional_countries[i].flag = response.package.additional_countries[i].short_hand.slice(0, 2);
-            if (response.package.additional_countries[i].title.indexOf('States') != -1) {
-              response.package.additional_countries.splice(0, 0, response.package.additional_countries.splice(i, 1)[0]);
+          for (var i = 0; i < _additional_countries.length; i++) {
+            _additional_countries[i].title = _additional_countries[i].title.replace('Netflix', ' ');
+            _additional_countries[i].flag = _additional_countries[i].short_hand.slice(0, 2);
+            if (_additional_countries[i].title.indexOf('States') != -1) {
+              _additional_countries.splice(0, 0, _additional_countries.splice(i, 1)[0]);
             }
-            if (response.package.additional_countries[i].title.indexOf('Kingdom') != -1) {
-              if (response.package.additional_countries[0].title.indexOf('States') != -1) {
-                response.package.additional_countries.splice(1, 0, response.package.additional_countries.splice(i, 1)[0]);
+            if (_additional_countries[i].title.indexOf('Kingdom') != -1) {
+              if (_additional_countries[0].title.indexOf('States') != -1) {
+                _additional_countries.splice(1, 0, _additional_countries.splice(i, 1)[0]);
               } else {
-                response.package.additional_countries.splice(0, 0, response.package.additional_countries.splice(i, 1)[0]);
+                _additional_countries.splice(0, 0, _additional_countries.splice(i, 1)[0]);
               }
             }
           }
-          $scope.netflix_countries = response.package.additional_countries;
+          $scope.netflix_countries = _additional_countries;
           $scope.$apply();
           $('.selector').mCustomScrollbar({
             theme: 'minimal-dark',
@@ -164,14 +165,15 @@
       });
       $scope.selectCountry = function (country) {
         Chrome.selectNetflixCountry(country, function (response) {
+          var _additional_countries = response['package'].additional_countries;
           $scope.netflix_selected_country = response.selected;
           // Correct the flags to be correctly named after the Country short_hand
           // Country short_hand naming convention is XX_hulu XX being the country, e.g. US_hulu
-          for (var i = 0; i < response.package.additional_countries.length; i++) {
-            response.package.additional_countries[i].flag = response.package.additional_countries[i].short_hand.slice(0, 2);
+          for (var i = 0; i < _additional_countries.length; i++) {
+            _additional_countries[i].flag = _additional_countries[i].short_hand.slice(0, 2);
           }
           // Sort alphabetically
-          response.package.additional_countries.sort(function (a, b) {
+          _additional_countries.sort(function (a, b) {
             if (a.title < b.title)
               return -1;
             if (a.title > b.title)
@@ -179,22 +181,22 @@
             return 0;
           });
           // Correct some naming conventions and put US and UK in top if the list
-          for (var i = 0; i < response.package.additional_countries.length; i++) {
+          for (var i = 0; i < _additional_countries.length; i++) {
             // Remove Netflix from the countries names
-            response.package.additional_countries[i].title = response.package.additional_countries[i].title.replace('Netflix', ' ');
-            response.package.additional_countries[i].flag = response.package.additional_countries[i].short_hand.slice(0, 2);
-            if (response.package.additional_countries[i].title.indexOf('States') != -1) {
-              response.package.additional_countries.splice(0, 0, response.package.additional_countries.splice(i, 1)[0]);
+            _additional_countries[i].title = _additional_countries[i].title.replace('Netflix', ' ');
+            _additional_countries[i].flag = _additional_countries[i].short_hand.slice(0, 2);
+            if (_additional_countries[i].title.indexOf('States') != -1) {
+              _additional_countries.splice(0, 0, _additional_countries.splice(i, 1)[0]);
             }
-            if (response.package.additional_countries[i].title.indexOf('Kingdom') != -1) {
-              if (response.package.additional_countries[0].title.indexOf('States') != -1) {
-                response.package.additional_countries.splice(1, 0, response.package.additional_countries.splice(i, 1)[0]);
+            if (_additional_countries[i].title.indexOf('Kingdom') != -1) {
+              if (_additional_countries[0].title.indexOf('States') != -1) {
+                _additional_countries.splice(1, 0, _additional_countries.splice(i, 1)[0]);
               } else {
-                response.package.additional_countries.splice(0, 0, response.package.additional_countries.splice(i, 1)[0]);
+                _additional_countries.splice(0, 0, _additional_countries.splice(i, 1)[0]);
               }
             }
           }
-          $scope.netflix_countries = response.package.additional_countries;
+          $scope.netflix_countries = _additional_countries;
           $scope.$apply();
         });
       };
