@@ -81,6 +81,7 @@
                 case 'getApiKey':
                     key = Storage.get('api_key');
                     sendResponse(key);
+                    break;
                 case 'dailyChannelCheck':
                     Status.dailyChannelCheck();
                     break;
