@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Proxmate",
-  "version": "4.3.5",
+  "version": "4.3.6",
   "description": "Proxmate unblocks your favourite movies, music, sports and more",
 
   "background": {

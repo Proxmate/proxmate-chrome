@@ -57,7 +57,7 @@
                 requestActivationUrl,
                 {
                     email: email,
-                    browser: 'Opera'
+                    browser: 'Chrome'
                     //is_update: is_update
                 },
                 function (data) {
