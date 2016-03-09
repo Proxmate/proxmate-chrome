@@ -53,5 +53,5 @@ describe 'Controller: InstallCtrl', () ->
     scope.activateProxmate()
     expect(chromeSpy.setProxmateStatus).toHaveBeenCalledWith(true, jasmine.any(Function))
 
-    # Every call to activate / deactivate ProxMate should trigger one get
+    # Every call to activate / deactivate Proxmate should trigger one get
     expect(chromeSpy.getProxmateStatus.callCount).toBe(3)
