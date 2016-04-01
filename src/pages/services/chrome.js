@@ -15,6 +15,9 @@
       getProxmateStatus: function (callback) {
         return emitMessage('getProxmateGlobalStatus', {}, callback);
       },
+      removeRule: function (callback) {
+        return emitMessage('removeRule', {}, callback);
+      },
       setProxmateStatus: function (status, callback) {
         return emitMessage('setProxmateGlobalStatus', { newStatus: status }, callback);
       },

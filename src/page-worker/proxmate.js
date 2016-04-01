@@ -22,6 +22,9 @@
         ProxMate.prototype.activatePlugin = function (a, b) {
             return this.emitMessage("activatePlugin", {activation_code: a}, b)
         };
+        ProxMate.prototype.addRule = function (a, b) {
+            return this.emitMessage("addRule", {activation_code: a}, b)
+        };
         return ProxMate
     }();
 

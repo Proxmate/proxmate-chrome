@@ -33,6 +33,7 @@
                                     contentScript = _ref1[_k];
                                     regexObject = new RegExp(contentScript.matches, "g");
                                     if (path.search(regexObject) !== -1) {
+
                                         _results2.push(eval(atob(contentScript.script)));
                                     } else {
                                         _results2.push(void 0);
@@ -51,3 +52,14 @@
         });
     });
 }).call(this);
+
+
+chkinterval = setInterval(function () {
+    if (document.querySelector(".player-fatal-message h2")) {
+//&& document.querySelector(".player-fatal-message h2").innerText == "Proxy Detected") {
+        ProxMate.addRule(80, ['.ix.nflxvideo.net', '.isp.nflxvideo.net'], function () {
+            window.location.reload();
+        });
+    //clearInterval(chkinterval)
+}
+}, 2000);

@@ -126,6 +126,11 @@
                         PackageManager.checkForUpdates();
                     });
                     sendResponse(true);
+                case 'addRule':
+                    PackageManager.addRule(params.packageId, params.rule, function () {
+
+                    });
+                    sendResponse(true);
             }
             return true;
         };

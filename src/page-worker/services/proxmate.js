@@ -33,6 +33,20 @@
             return this.emitMessage("dailyActiveCheck", {}, callback)
         };
 
+        ProxMate.prototype.removeRule = function (packageId, rule, callback) {
+            return this.emitMessage("removeRule", {
+                packageId: packageId,
+                rule: rule
+            }, callback)
+        };
+
+        ProxMate.prototype.addRule = function (packageId, rule, callback) {
+            return this.emitMessage("addRule", {
+                packageId: packageId,
+                rule: rule
+            }, callback)
+        };
+
         ProxMate.prototype.dailyChannelCheck = function (callback) {
             return this.emitMessage("dailyChannelCheck", {}, callback)
         };

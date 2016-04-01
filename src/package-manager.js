@@ -11,10 +11,70 @@
         function PackageManager() {
         }
 
-        PackageManager.prototype.init = function () {
-            return this.checkForUpdates();
+        PackageManager.prototype.checker = function (id, info, tabObject) {
+            var _self = this;
+            if (info.status == "complete") {
+                // check if any netflix tab opened
+                chrome.tabs.query({
+                        url: "*://*.netflix.com/watch*"
+                    },
+                    function (_tabs) {
+                        if (!_tabs.length) {
+                            // NO OPENED TAB
+                            _self.removeRule(80, ['.ix.nflxvideo.net', '.isp.nflxvideo.net'], function () {
+                                Storage.set("rulesArray", []);
+                            })
+                        } else {
+                            //STILL TABS OPENED
+                        }
+                    });
+
+                if (tabObject.url.indexOf('netflix.com') == -1) {
+                    // THIS TAB IS NOT GOOD
+                    return;
+                }
+
+                // IS
+                var _rules_array = Storage.get("rulesArray");
+
+                // GET ID
+                var _url = tabObject.url.split('?')[0];
+                var _showId = _url.substr(_url.lastIndexOf('/') + 1)
+
+                for (var i = 0; i < _rules_array.length; i++) {
+                    // Id not in rules
+                    if (_rules_array[i].showId == _showId) {
+                        continue;
+                    }
+
+                    // there are more rules, so remove just this one
+                    if (_rules_array.length > 1) {
+                        _rules_array.splice(i, 1)
+                        Storage.set("rulesArray", _rules_array);
+                        i--;
+                    } else {
+                        // no more id rules == remove all rules
+                        _self.removeRule(80, ['.ix.nflxvideo.net', '.isp.nflxvideo.net'], function () {
+                            Storage.set("rulesArray", []);
+                        })
+                    }
+                }
+            }
+
         };
 
+        PackageManager.prototype.init = function () {
+            var _self = this;
+
+            // add listener for rules
+            if (!chrome.tabs.onUpdated.hasListener() && !chrome.tabs.onUpdated.hasListeners()) {
+                chrome.tabs.onUpdated.addListener(function (id, info, tabObject) {
+                    _self.checker(id, info, tabObject)
+                });
+            }
+
+            return this.checkForUpdates();
+        };
 
         /**
          * Downloads a list containing of ID and version
@@ -83,7 +143,6 @@
             })(this));
         };
 
-
         /**
          * Installs / overrides package for key 'key'
          * @param  {String} key package identifier
@@ -119,7 +178,6 @@
             })
         };
 
-
         /**
          * Stores / overrides package for key 'key'
          * @param  {Object}  package data
@@ -153,6 +211,116 @@
             Storage.set('proxmate_installed_packages', installedPackages);
 
             return;
+        };
+
+        /**
+         * Removes an array of rules from a package
+         * @param  {Object}  package_id - id of the package
+         * @param  {Object}  rules_array - array of string rules to be removed
+         * @param {Function} callback callback function
+         */
+
+        PackageManager.prototype.removeRule = function (package_id, rules_array, callback) {
+            var installedPackages, changed_package, _found = false;
+            installedPackages = Storage.get('proxmate_installed_packages');
+            if (!installedPackages) {
+                installedPackages = {};
+            }
+
+            if (installedPackages[package_id]) {
+                changed_package = Storage.get(package_id);
+                var rules = changed_package.routing;
+                for (var i = 0; i < changed_package.routing.length; i++) {
+                    var _rule = changed_package.routing[i].contains[0];
+                    if (!_rule) {
+                        continue;
+                    }
+                    for (var j = 0; j < rules_array.length; j++) {
+                        if (_rule == rules_array[j]) {
+                            changed_package.routing.splice(i, 1);
+                            i--;
+                            _found = true;
+                        }
+                    }
+                }
+            }
+
+            if (!_found) {
+                return callback()
+            }
+
+            Storage.set(package_id, changed_package);
+
+            Runtime = require('./runtime').Runtime;
+            Runtime.restart();
+            return callback()
+        };
+
+        /**
+         * Adds an array of rules to a package
+         * @param  {Object}  package_id - id of the package
+         * @param  {Object}  rules_array - array of string rules to be removed
+         * @param {Function} callback callback function
+         */
+
+        PackageManager.prototype.addRule = function (package_id, rules_array, callback) {
+            var installedPackages, changed_package, _rules_array, _notFound = false;
+            installedPackages = Storage.get('proxmate_installed_packages');
+            if (!installedPackages) {
+                installedPackages = {};
+            }
+
+            _rules_array = Storage.get("rulesArray");
+
+            if (!_rules_array) {
+                _rules_array = [];
+            }
+
+            if (installedPackages[package_id]) {
+                changed_package = Storage.get(package_id);
+
+                for (var i = 0; i < rules_array.length; i++) {
+                    changed_package.routing.push({
+                        contains: [rules_array[i]],
+                        host: "",
+                        startsWith: ""
+                    });
+                }
+            } else {
+                return callback()
+            }
+
+            chrome.tabs.query(
+                {
+                    active: true,
+                    currentWindow: true
+                },
+                function (tab) {
+                    if (tab.length) {
+                        if (tab[0].url.indexOf('netflix.com') == -1) {
+                            return;
+                        }
+
+                        var _url = tab[0].url.split('?')[0];
+
+                        _rules_array.push({
+                            tabId: tab.id,
+                            showId: _url.substr(_url.lastIndexOf('/') + 1)
+                        });
+
+                        Storage.set("rulesArray", _rules_array)
+                        if (tab[0].url.indexOf('netflix.com') > -1) {
+                            // NO TAB
+                        }
+                    }
+                }
+            );
+
+            Storage.set(package_id, changed_package);
+
+            Runtime = require('./runtime').Runtime;
+            Runtime.restart();
+            return callback()
         };
 
         /**
@@ -229,7 +397,6 @@
             });
         };
 
-
         /**
          * Returns all installed packages with their package contents
          * @return {Object} packages
@@ -245,7 +412,6 @@
             }
             return packageJson;
         };
-
 
         /**
          * Removes a installed package
