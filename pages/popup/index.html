@@ -81,14 +81,14 @@
             <hr>
 
             <div ng-if="subscription_status == 'trial' || subscription_status == 'subscription_canceled' || subscription_status == 'subscription_expired'" class="btn-wrap">
-                <a ng-if="plan_status == 'proxmate_yearly_1195'" href="#" ng-click="openTab('https://web.proxmate.me/pricing/')" class="btn btn-action btn-red btn-crown">Renew</a>
-                <a ng-if="plan_status != 'proxmate_yearly_1195'" href="#" ng-click="openTab('https://web.proxmate.me/pricing/')" class="btn btn-action btn-red btn-crown">Upgrade</a>
+                <a ng-if="plan_status == 'proxmate_yearly_1195' || plan_status == 'proxmate_quarterly_395' || plan_status == 'proxmate_monthly_149'" href="#" ng-click="openTab('https://proxmate.me/pricing/')" class="btn btn-action btn-red btn-crown">Renew</a>
+                <a ng-if="plan_status != 'proxmate_yearly_1195' && plan_status != 'proxmate_quarterly_395' && plan_status != 'proxmate_monthly_149'" href="#" ng-click="openTab('https://proxmate.me/pricing/')" class="btn btn-action btn-red btn-crown">Upgrade</a>
             </div>
 
             <hr ng-if="subscription_status == 'trial' || subscription_status == 'subscription_canceled' || subscription_status == 'subscription_expired'">
 
             <div class="btn-wrap">
-                <a ng-click="openTab('https://web.proxmate.me/channels/')"
+                <a ng-click="openTab('https://proxmate.me/channels/')"
                    class="btn btn-action btn-grey btn-remote">Channels</a>
             </div>
 
@@ -104,8 +104,8 @@
         <!-- Netflix -->
         <div class="item" id="netflix">
             <div ng-if="subscription_status == 'trial' || subscription_status == 'subscription_canceled' || subscription_status == 'subscription_expired'" class="btn-wrap">
-                <a ng-if="plan_status == 'proxmate_yearly_1195'" href="#" ng-click="openTab('https://web.proxmate.me/pricing/')" class="btn btn-action btn-red btn-crown">Renew</a>
-                <a ng-if="plan_status != 'proxmate_yearly_1195'" href="#" ng-click="openTab('https://web.proxmate.me/pricing/')" class="btn btn-action btn-red btn-crown">Upgrade</a>
+                <a ng-if="plan_status == 'proxmate_yearly_1195' || plan_status == 'proxmate_quarterly_395' || plan_status == 'proxmate_monthly_149'" href="#" ng-click="openTab('https://proxmate.me/pricing/')" class="btn btn-action btn-red btn-crown">Renew</a>
+                <a ng-if="plan_status != 'proxmate_yearly_1195' && plan_status != 'proxmate_quarterly_395' && plan_status != 'proxmate_monthly_149'" href="#" ng-click="openTab('https://proxmate.me/pricing/')" class="btn btn-action btn-red btn-crown">Upgrade</a>
             </div>
 
             <hr>
@@ -130,10 +130,10 @@
 
 
                         </div>
-                        <div class="btn-wrap" ng-if="subscription_status == 'subscription_expired'" ng-click="openTab('https://web.proxmate.me/pricing/')">
+                        <div class="btn-wrap" ng-if="subscription_status == 'subscription_expired'" ng-click="openTab('https://proxmate.me/pricing/')">
                             <div>
-                                <a ng-if="plan_status == 'proxmate_yearly_1195'" href="#" class="btn btn-red">Renew</a>
-                                <a ng-if="plan_status != 'proxmate_yearly_1195'" href="#" class="btn btn-red">Upgrade</a>
+                                <a ng-if="plan_status == 'proxmate_yearly_1195' || plan_status == 'proxmate_quarterly_395' || plan_status == 'proxmate_monthly_149'" href="#" class="btn btn-red">Renew</a>
+                                <a ng-if="plan_status != 'proxmate_yearly_1195' && plan_status != 'proxmate_quarterly_395' && plan_status != 'proxmate_monthly_149'" href="#" class="btn btn-red">Upgrade</a>
                             </div>
                         </div>
                     </li>
@@ -160,8 +160,8 @@
             </div>
 
             <div ng-if="subscription_status == 'trial' || subscription_status == 'subscription_canceled' || subscription_status == 'subscription_expired'" class="btn-wrap">
-                <a ng-if="plan_status == 'proxmate_yearly_1195'" href="#" ng-click="openTab('https://web.proxmate.me/pricing/')" class="btn btn-action btn-red btn-crown">Renew</a>
-                <a ng-if="plan_status != 'proxmate_yearly_1195'" href="#" ng-click="openTab('https://web.proxmate.me/pricing/')" class="btn btn-action btn-red btn-crown">Upgrade</a>
+                <a ng-if="plan_status == 'proxmate_yearly_1195' || plan_status == 'proxmate_quarterly_395' || plan_status == 'proxmate_monthly_149'" href="#" ng-click="openTab('https://proxmate.me/pricing/')" class="btn btn-action btn-red btn-crown">Renew</a>
+                <a ng-if="plan_status != 'proxmate_yearly_1195' && plan_status != 'proxmate_quarterly_395' && plan_status != 'proxmate_monthly_149'" href="#" ng-click="openTab('https://proxmate.me/pricing/')" class="btn btn-action btn-red btn-crown">Upgrade</a>
             </div>
 
         </div>
@@ -171,7 +171,10 @@
             <p ng-if="subscription_status == 'trial'" class="emphasize">Your free trial expires in</p>
             <p ng-if="subscription_status == 'subscribed'" class="emphasize">Active subscription</p>
             <p ng-if="subscription_status == 'unlimited'" class="emphasize">Active subscription</p>
-            <p ng-if="subscription_status == 'subscription_canceled'" class="emphasize">Your subscription ends on:</p>
+
+            <p ng-if="subscription_status == 'subscription_canceled' && (plan_status == 'proxmate_yearly_1195' || plan_status == 'proxmate_quarterly_395' || plan_status == 'proxmate_monthly_149')" class="emphasize">Your Pay As You Go plan ends on:</p>
+            <p ng-if="subscription_status == 'subscription_canceled' && (plan_status != 'proxmate_yearly_1195' && plan_status != 'proxmate_quarterly_395' && plan_status != 'proxmate_monthly_149')" class="emphasize">Your subscription ends on:</p>
+
             <p ng-if="subscription_status == 'subscription_expired'" class="emphasize">Subscription status:</p>
 
             <p ng-if="subscription_status == 'trial'" class="important">{{remainingTime}}</p>
@@ -182,15 +185,15 @@
 
             <p ng-if="subscription_status == 'trial'" class="important-less">{{remainingTime_unit}}</p>
 
-            <p ng-if="payment_status != 'pending' && subscription_status == 'subscribed'" class="important-less" style="font-size: 12px">Next payment: {{next_payment}}</p>
-            <p ng-if="payment_status != 'pending' && subscription_status == 'subscription_canceled'" class="important-less" style="font-size: 12px">Account Status: Active</p>
+            <p ng-if="payment_status != 'pending' && subscription_status == 'subscribed'" class="important-less" style="font-size: 12px">Next payment - {{next_payment}}</p>
+            <p ng-if="payment_status != 'pending' && subscription_status == 'subscription_canceled'" class="important-less" style="font-size: 12px">Account Status - Active</p>
             <!--<p ng-if="payment_status == 'pending'" class="important-less" style="font-size: 12px">Payment Waiting</p>-->
-            <p ng-if="payment_status == 'pending'" class="important-less" style="font-size: 12px">Account Status: Active</p>
+            <p ng-if="payment_status == 'pending'" class="important-less" style="font-size: 12px">Account Status - Active</p>
             <p ng-if="subscription_status == 'subscription_expired'" class="important-less" style="font-size: 12px">Please upgrade to continue to use Proxmate</p>
 
             <hr ng-if="user_email">
 
-            <p ng-if="user_email" class="emphasize">Registered E-mail:</p>
+            <p ng-if="user_email" class="emphasize">Registered E-mail</p>
 
             <div style="Font-size: 15px;color: #be3a34;" class="email">
                 <p>{{ user_email }}</p>
@@ -199,8 +202,8 @@
             <hr ng-if="subscription_status == 'trial' || subscription_status == 'subscription_canceled' || subscription_status == 'subscription_expired'">
 
             <div ng-if="subscription_status == 'trial' || subscription_status == 'subscription_canceled' || subscription_status == 'subscription_expired'" class="btn-wrap">
-                <a ng-if="plan_status == 'proxmate_yearly_1195'" href="#" ng-click="openTab('https://web.proxmate.me/pricing/')" class="btn btn-action btn-red btn-crown">Renew</a>
-                <a ng-if="plan_status != 'proxmate_yearly_1195'" href="#" ng-click="openTab('https://web.proxmate.me/pricing/')" class="btn btn-action btn-red btn-crown">Upgrade</a>
+                <a ng-if="plan_status == 'proxmate_yearly_1195' || plan_status == 'proxmate_quarterly_395' || plan_status == 'proxmate_monthly_149'" href="#" ng-click="openTab('https://proxmate.me/pricing/')" class="btn btn-action btn-red btn-crown">Renew</a>
+                <a ng-if="plan_status != 'proxmate_yearly_1195' && plan_status != 'proxmate_quarterly_395' && plan_status != 'proxmate_monthly_149'" href="#" ng-click="openTab('https://proxmate.me/pricing/')" class="btn btn-action btn-red btn-crown">Upgrade</a>
             </div>
 
             <!--<hr ng-if="subscription_supplier == 'stripe' && ( subscription_status == 'subscription_canceled' || subscription_status == 'subscription_expired')">

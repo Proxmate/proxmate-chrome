@@ -1,19 +1,13 @@
 (function () {
-    var Storage, Status, Config, Browser, Runtime;
-
-    Storage = require('./storage').Storage;
-
-    Browser = require('./browser').Browser;
-
-    Config = require('./config').Config;
-
-    Runtime = require('./runtime').Runtime;
-
+    var Config, Browser, Runtime, Storage, Status;
+    Config = require("./config").Config;
+    Storage = require("./storage").Storage;
+    Browser = require("./browser").Browser;
+    Runtime = require("./runtime").Runtime;
     Status = (function () {
         function Status() {
 
         }
-
 
         Status.prototype.init = function () {
             var status_check;

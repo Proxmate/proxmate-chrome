@@ -94,7 +94,7 @@
                             content: "Click here to check out the plan options available",
                             has_url: true,
                             time_show: false,
-                            url: "https://web.proxmate.me/pricing/",
+                            url: "https://proxmate.me/pricing/",
                             is_sticky: true,
                             is_closable: false,
                             closed: false
@@ -127,7 +127,7 @@
                             content: "Click here to check out the plan options available",
                             has_url: true,
                             time_show: false,
-                            url: "https://web.proxmate.me/pricing/",
+                            url: "https://proxmate.me/pricing/",
                             is_sticky: true,
                             is_closable: false,
                             closed: false
@@ -158,7 +158,7 @@
                             content: "Click here to check out the plan options available",
                             has_url: true,
                             time_show: false,
-                            url: "https://web.proxmate.me/pricing/",
+                            url: "https://proxmate.me/pricing/",
                             is_sticky: true,
                             is_closable: false,
                             closed: false

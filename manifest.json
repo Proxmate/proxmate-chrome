@@ -1,13 +1,13 @@
 {
   "manifest_version": 2,
   "name": "Proxmate",
-  "version": "4.4.0",
-  "description": "Proxmate unblocks your favourite movies, music, sports and more",
+  "version": "4.4.2",
+  "description": "Browse the web with confidence! Easily, Privately & Securely!",
 
   "background": {
     "page": "background.html"
   },
-  "homepage_url": "https://web.proxmate.me/",
+  "homepage_url": "https://proxmate.me/",
   "browser_action": {
     "default_title": "Click to open Proxmate quick menu",
     "default_icon": "ressources/images/icon128.png"

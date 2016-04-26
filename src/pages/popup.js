@@ -202,10 +202,10 @@
         });
       };
       $scope.update_card = function () {
-        $scope.openTab('https://web.proxmate.me/change-card/' + $scope.api_key + '/');
+        $scope.openTab('https://proxmate.me/change-card/' + $scope.api_key + '/');
       };
       $scope.unsubscribe = function () {
-        $scope.openTab('https://web.proxmate.me/unsubscribe/' + $scope.api_key + '/');
+        $scope.openTab('https://proxmate.me/unsubscribe/' + $scope.api_key + '/');
       };
       $scope.openTab = function (url) {
         chrome.tabs.create({ url: url });
