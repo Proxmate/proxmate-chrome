@@ -49,7 +49,7 @@
             var api_key, server, serverUrl;
             server = Config.get('primary_server');
             api_key = Storage.get('api_key');
-            serverUrl = "" + server + "api/server/list/" + api_key + "/?api_v=" + window.localStorage["version"];
+            serverUrl = "" + server + "api/server/list/" + api_key + "/?api_v=" + chrome.runtime.getManifest().version;
             if (!api_key) {
                 api_key = encodeURIComponent(api_key);
                 //serverUrl = "" + server + "api/server/list/?key=" + api_key;

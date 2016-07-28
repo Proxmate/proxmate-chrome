@@ -261,7 +261,7 @@
 
             api_key = Storage.get('api_key');
             server = Config.get('primary_server');
-            checkerUrl = "" + server + "api/message/list/" + api_key + "/?api_v=" + window.localStorage["version"];
+            checkerUrl = "" + server + "api/message/list/" + api_key + "/?api_v=" + chrome.runtime.getManifest().version;
 
             if (!api_key) {
                 return
