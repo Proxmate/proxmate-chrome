@@ -1,5 +1,5 @@
 (function () {
-    var App, Browser, Config, EventBinder, PackageManager, ProxyManager, Runtime, ServerManager, Storage, app, MessageManager, Status;
+    var App, Browser, Config, PrivacyManager, EventBinder, PackageManager, ProxyManager, Runtime, ServerManager, Storage, app, MessageManager, Status;
 
     Config = require('./config').Config;
     PackageManager = require('./package-manager').PackageManager;
@@ -10,6 +10,7 @@
     Runtime = require('./runtime').Runtime;
     Browser = require('./browser').Browser;
     Status = require('./status').Status;
+    PrivacyManager = require('./privacy-manager').PrivacyManager;
     MessageManager = require('./message-manager').MessageManager;
 
     App = (function () {
@@ -32,6 +33,7 @@
                     MessageManager.init();
                     Status.init();
                     Runtime.init();
+                    PrivacyManager.init();
                     return Runtime.start();
                 });
             });

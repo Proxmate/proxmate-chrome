@@ -21,7 +21,7 @@
                     function (_tabs) {
                         if (!_tabs.length) {
                             // NO OPENED TAB
-                            _self.removeRule(80, ['.ix.nflxvideo.net', '.isp.nflxvideo.net'], function () {
+                            _self.removeRule(80, ['.ix.nflxvideo.net', '.isp.nflxvideo.net', 'www.netflix.com'], function () {
                                 Storage.set("rulesArray", []);
                             })
                         } else {
@@ -54,7 +54,7 @@
                         i--;
                     } else {
                         // no more id rules == remove all rules
-                        _self.removeRule(80, ['.ix.nflxvideo.net', '.isp.nflxvideo.net'], function () {
+                        _self.removeRule(80, ['.ix.nflxvideo.net', '.isp.nflxvideo.net', 'www.netflix.com'], function () {
                             Storage.set("rulesArray", []);
                         })
                     }

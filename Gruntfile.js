@@ -34,7 +34,7 @@ module.exports = function (grunt) {
         watch: {
             js: {
                 files: ['src/**/*.js'],
-                tasks: ['copy:src', 'browserify:src' ,'karma']
+                tasks: ['copy:src', 'browserify:src']
             },
             test: {
                 files: ['test/**/*.coffee'],

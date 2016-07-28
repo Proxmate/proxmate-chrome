@@ -21,6 +21,18 @@
       setProxmateStatus: function (status, callback) {
         return emitMessage('setProxmateGlobalStatus', { newStatus: status }, callback);
       },
+      setPrivacyStatus: function (status, callback) {
+        return emitMessage('setPrivacyStatus', { newStatus: status }, callback);
+      },
+      setMalwareStatus: function (status, callback) {
+        return emitMessage('setMalwareStatus', { newStatus: status }, callback);
+      },
+      getPrivacyStatus: function (callback) {
+        return emitMessage('getPrivacyStatus', {}, callback);
+      },
+      getMalwareStatus: function (callback) {
+        return emitMessage('getMalwareStatus', {}, callback);
+      },
       getInstalledPackages: function (callback) {
         return emitMessage('getInstalledPackages', {}, callback);
       },

@@ -1729,7 +1729,26 @@ footer ul li img {
     color: #fff
 }
 
+#features .feature-container {
+    height: 40px;
+    margin-bottom: 20px;
+}
+
+#features .feature-name.disabled {
+    color: #333333;
+}
+
+#features .feature-name {
+    color: #be3a34;
+    #padding: 10px 0 15px;
+    margin: 0;
+    font-size: 18px;
+}
+
 #features h1 {
+    color: #be3a34;
+    margin: 0;
+    font-size: 20px;
     padding: 0 0 10px
 }
 
