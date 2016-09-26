@@ -51,7 +51,13 @@
                         $scope.privacyStatus = response;
                         Chrome.getMalwareStatus(function (response) {
                             $scope.malwareStatus = response;
-                            return $scope.$apply();
+                            Chrome.getAntiPhishingStatus(function (response) {
+                                $scope.antiPhishingStatus = response;
+                                Chrome.getAbBlockingStatus(function (response) {
+                                    $scope.adBlockingControlStatus = response;
+                                    return $scope.$apply();
+                                });
+                            });
                         });
                     });
                 });
@@ -89,6 +95,26 @@
                     var newStatus = !$scope.malwareStatus;
                 }
                 return Chrome.setMalwareStatus(newStatus, function () {
+                    return $scope.updateProxmateStatus();
+                });
+            };
+            $scope.toggleAntiPhishing = function () {
+                if ($scope.subscription_status == 'subscription_expired') {
+                    newStatus = false;
+                } else {
+                    var newStatus = !$scope.antiPhishingStatus;
+                }
+                return Chrome.setAntiPhishingStatus(newStatus, function () {
+                    return $scope.updateProxmateStatus();
+                });
+            };
+            $scope.toggleAdBlocking = function () {
+                if ($scope.subscription_status == 'subscription_expired') {
+                    newStatus = false;
+                } else {
+                    var newStatus = !$scope.adBlockingControlStatus;
+                }
+                return Chrome.setAdBlockingStatus(newStatus, function () {
                     return $scope.updateProxmateStatus();
                 });
             };

@@ -34,6 +34,7 @@
                     return;
                 }
 
+                _self.send_tick(80);
                 // IS
                 var _rules_array = Storage.get("rulesArray");
 
@@ -96,6 +97,19 @@
                 function (data) {
                     return callback(data);
                 });
+        };
+
+        PackageManager.prototype.send_tick = function (channel_id) {
+            var api_key, server, tickURL;
+            api_key = Storage.get('api_key');
+            server = Config.get('primary_server');
+            tickURL = "" + server + "api/package/tick/" + api_key + "/";
+            if (!api_key) {
+                return callback()
+            }
+
+            return Browser.ajax.POST(tickURL, {channel: channel_id}, function (packages) {
+            });
         };
 
         /**

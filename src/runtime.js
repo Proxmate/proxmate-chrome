@@ -58,7 +58,6 @@
                 {
                     email: email,
                     browser: 'Chrome'
-                    //is_update: is_update
                 },
                 function (data) {
                     return callback(data);

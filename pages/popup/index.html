@@ -33,8 +33,6 @@
     </div>
     <div class="pull-right">
         <div class="onoffswitch">
-            <input ng-if="subscription_status == 'subscription_expired'" type="checkbox" name="weonoffswitch" disabled
-                   class="onoffswitch-checkbox" id="myonoffswitch">
             <input ng-if="subscription_status != 'subscription_expired'" type="checkbox" name="weonoffswitch"
                    ng-click="toggleProxmate()" ng-checked="proxmateStatus" class="onoffswitch-checkbox"
                    id="myonoffswitch">
@@ -70,7 +68,7 @@
                         <a style="cursor: pointer" href="#" ng-click="openTab(message.url)">
                             <strong>{{message.title}}</strong>
                             {{message.content}}
-                            <img src="../../ressources/images/2arrows-right.svg" alt="Read more"/>
+                            <img ng-if="message.has_url" src="../../ressources/images/2arrows-right.svg" alt="Read more"/>
                         </a>
                     </p>
                 </div>
@@ -83,7 +81,7 @@
                         <a style="cursor: pointer" href="#" ng-click="openTab(message.url)">
                             <strong>{{message.title}}</strong>
                             {{message.content}}
-                            <img src="../../ressources/images/2arrows-right.svg" alt="Read more"/>
+                            <img ng-if="message.has_url" src="../../ressources/images/2arrows-right.svg" alt="Read more"/>
                         </a>
                     </p>
                 </div>
@@ -112,14 +110,21 @@
 
             <div class="btn-wrap">
                 <a ng-click="openTab('https://proxmate.me/channels/')"
-                   class="btn btn-action btn-grey btn-remote">Channels</a>
+                   class="btn btn-action btn-red btn-remote">Channels</a>
             </div>
 
             <hr>
 
             <div class="btn-wrap">
                 <a ng-click="openTab('https://prox-mate.zendesk.com/')"
-                   class="btn btn-action btn-grey btn-tool">Support</a>
+                   class="btn btn-action btn-red btn-tool">FAQ</a>
+            </div>
+
+            <hr>
+
+            <div class="btn-wrap">
+                <a ng-click="openTab('https://proxmate.me/?live_chat=open')"
+                   class="btn btn-action btn-red btn-chat">Live Chat</a>
             </div>
 
         </div>
@@ -192,11 +197,28 @@
 
         <!-- Features -->
         <div class="item" id="features">
-            <h1>Security Features</h1>
-
+            <h1>Privacy Features</h1>
+            <div class="feature-container">
+                <div class="pull-left" style="position: absolute">
+                    <div class="feature-name">AdBlocking</div>
+                    <div style="font-size: 10px">Blocks adverts on the sites you surf.</div>
+                </div>
+                <div class="pull-right">
+                    <div class="onoffswitch">
+                        <input ng-if="subscription_status != 'subscription_expired'" type="checkbox"
+                               name="weonoffswitch"
+                               ng-click="toggleAdBlocking()" ng-checked="adBlockingControlStatus" class="onoffswitch-checkbox"
+                               id="ad-blocking-switch-feature">
+                        <label class="onoffswitch-label" for="ad-blocking-switch-feature">
+                            <span class="onoffswitch-inner"></span>
+                            <span class="onoffswitch-switch"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
             <div class="feature-container">
                 <div class="pull-left">
-                    <div class="feature-name">Tracking Privacy</div>
+                    <div class="feature-name">Tracking Protection</div>
                     <div style="font-size: 10px">Actively blocks domains known to track users.</div>
                 </div>
                 <div class="pull-right">
@@ -232,45 +254,24 @@
                     </div>
                 </div>
             </div>
-            <hr>
-
-            <h1>Coming Soon</h1>
-
             <div class="feature-container">
                 <div class="pull-left">
-                    <div class="feature-name disabled">Anti-Phishing Protection</div>
+                    <div class="feature-name">Anti-Phishing Protection</div>
                     <div style="font-size: 10px">Actively blocks pages used for phishing.</div>
                 </div>
-                <!--<div class="pull-right">-->
-                    <!--<div class="onoffswitch">-->
-                        <!--<input ng-if="subscription_status == 'subscription_expired'" type="checkbox"-->
-                               <!--name="weonoffswitch"-->
-                               <!--disabled class="onoffswitch-checkbox" id="phishing-switch-feature">-->
-                        <!--<label class="onoffswitch-label" for="phishing-switch-feature">-->
-                            <!--<span class="onoffswitch-inner"></span>-->
-                            <!--<span class="onoffswitch-switch"></span>-->
-                        <!--</label>-->
-                    <!--</div>-->
-                <!--</div>-->
 
-            </div>
-
-            <div class="feature-container">
-                <div class="pull-left" style="position: absolute">
-                    <div class="feature-name disabled">Parental Control</div>
-                    <div style="font-size: 10px">Restrict adult violence and gambling content.</div>
+                <div class="pull-right">
+                    <div class="onoffswitch">
+                        <input ng-if="subscription_status != 'subscription_expired'" type="checkbox"
+                               name="weonoffswitch"
+                               ng-click="toggleAntiPhishing()" ng-checked="antiPhishingStatus" class="onoffswitch-checkbox"
+                               id="phishing-switch-feature">
+                        <label class="onoffswitch-label" for="phishing-switch-feature">
+                            <span class="onoffswitch-inner"></span>
+                            <span class="onoffswitch-switch"></span>
+                        </label>
+                    </div>
                 </div>
-                <!--<div class="pull-right">-->
-                    <!--<div class="onoffswitch">-->
-                        <!--<input ng-if="subscription_status == 'subscription_expired'" type="checkbox"-->
-                               <!--name="weonoffswitch"-->
-                               <!--disabled class="onoffswitch-checkbox" id="parental-switch-feature">-->
-                        <!--<label class="onoffswitch-label" for="parental-switch-feature">-->
-                            <!--<span class="onoffswitch-inner"></span>-->
-                            <!--<span class="onoffswitch-switch"></span>-->
-                        <!--</label>-->
-                    <!--</div>-->
-                <!--</div>-->
             </div>
 
             <div ng-if="subscription_status == 'trial' || subscription_status == 'subscription_canceled' || subscription_status == 'subscription_expired'"

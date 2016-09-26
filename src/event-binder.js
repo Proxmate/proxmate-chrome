@@ -84,6 +84,35 @@
                                 sendResponse(true);
                             }
                             break;
+                        case 'getAdBlockingStatus':
+                            global_status = Storage.get('proxmate_global_status');
+                            if (!global_status) {
+                                sendResponse(false);
+
+                            } else {
+                                status = Storage.get('proxmate_ad_blocking_status');
+                                if (status !== undefined) {
+                                    sendResponse(status);
+                                } else {
+                                    status = Storage.set('proxmate_ad_blocking_status', true);
+                                    sendResponse(false);
+                                }
+                            }
+                            break;
+                        case 'setAdBlockingStatus':
+                            global_status = Storage.get('proxmate_global_status');
+                            if (!global_status) {
+                                sendResponse(false);
+
+                            } else {
+                                newStatus = params.newStatus;
+                                if (typeof newStatus !== 'boolean') {
+                                    newStatus = false;
+                                }
+                                Storage.set('proxmate_ad_blocking_status', newStatus);
+                                sendResponse(true);
+                            }
+                            break;
                         case 'getPrivacyStatus':
                             global_status = Storage.get('proxmate_global_status');
                             if (!global_status) {
@@ -110,6 +139,35 @@
                                     newStatus = false;
                                 }
                                 Storage.set('proxmate_privacy_status', newStatus);
+                                sendResponse(true);
+                            }
+                            break;
+                        case 'getAntiPhishingStatus':
+                            global_status = Storage.get('proxmate_global_status');
+                            if (!global_status) {
+                                sendResponse(false);
+
+                            } else {
+                                status = Storage.get('proxmate_phishing_status');
+                                if (status !== undefined) {
+                                    sendResponse(status);
+                                } else {
+                                    status = Storage.set('proxmate_phishing_status', true);
+                                    sendResponse(true);
+                                }
+                            }
+                            break;
+                        case 'setAntiPhishingStatus':
+                            global_status = Storage.get('proxmate_global_status');
+                            if (!global_status) {
+                                sendResponse(false);
+
+                            } else {
+                                newStatus = params.newStatus;
+                                if (typeof newStatus !== 'boolean') {
+                                    newStatus = false;
+                                }
+                                Storage.set('proxmate_phishing_status', newStatus);
                                 sendResponse(true);
                             }
                             break;

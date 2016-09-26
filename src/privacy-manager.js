@@ -6,22 +6,21 @@
     PrivacyManager = (function () {
         function PrivacyManager() {
             this.privacy_list = {};
-            this.privacy_list.filters = this.privacy_list.filters || [];
-            this.privacy_list.exceptionFilters = this.privacy_list.exceptionFilters || [];
-            this.privacy_list.htmlRuleFilters = this.privacy_list.htmlRuleFilters || [];
+            this.privacy_list.trackingRules = this.privacy_list.trackingRules || {};
             this.privacy_list.malwareRules = this.privacy_list.malwareRules || [];
             this.privacy_list.phishingRules = this.privacy_list.phishingRules || [];
+            this.privacy_list.adBlockingRules = this.privacy_list.adBlockingRules || {};
 
             this.whitelisted_rules = ["||doubleclick.net^$image,third-party", "||googleadservices.com^$third-party"];
 
-            this.tracking_list_url = "https://proxmate.me/static/lists/privacy_list.txt";
-            this.malware_list_url = "https://proxmate.me/static/lists/malware_list.txt";
-            this.phishing_list_url = "https://proxmate.me/static/lists/phishing_list.txt";
+            this.ad_blocking_list_url = "https://proxmate.me/static/lists/ad_blocking_list.txt";
+            this.tracking_list_url = "https://cdn-new.proxmate.me/lists/privacy_list.txt";
+            this.malware_list_url = "https://cdn-new.proxmate.me/lists/malware_list.txt";
+            this.phishing_list_url = "https://cdn-new.proxmate.me/lists/phishing_list.txt";
 
             /**
              * bitwise mask of different request types
              */
-
             this.elementTypes = {
                 SCRIPT: 0o1,
                 IMAGE: 0o2,
@@ -55,80 +54,116 @@
 
             this.separatorCharacters = ':?/=^';
             this.tabs = {};
+            this.css_tabs = {};
         }
 
         PrivacyManager.prototype.init = function () {
-            var _self, status, debugger_status, malware_status;
+            var _self, status, malware_status, phishing_status, ad_blocking_status;
             _self = this;
             _self.update_tracking_list(function (data) {
-                Storage.set("yn_tracking_list", data);
                 _self.parse_tracking_list(data);
                 _self.update_malware_list(function (data) {
-                    Storage.set("yn_malware_list", data);
                     _self.parse_malware_list(data);
+                    _self.update_ad_blocking_list(function (data) {
+                        _self.parse_ad_blocking_list(data);
+                        _self.update_phishing_list(function (data) {
+                            _self.parse_phishing_list(data);
 
-                    status = Storage.get('proxmate_privacy_status');
-                    if (status == undefined) {
-                        status = true;
-                        Storage.set('proxmate_privacy_status', status);
-                    }
+                            status = Storage.get('proxmate_privacy_status');
+                            if (status == undefined) {
+                                status = true;
+                                Storage.set('proxmate_privacy_status', status);
+                            }
 
-                    malware_status = Storage.get('proxmate_malware_status');
-                    if (malware_status == undefined) {
-                        malware_status = true;
-                        Storage.set('proxmate_malware_status', status);
-                    }
+                            malware_status = Storage.get('proxmate_malware_status');
+                            if (malware_status == undefined) {
+                                malware_status = true;
+                                Storage.set('proxmate_malware_status', malware_status);
+                            }
 
-                    //debugger_status = Storage.get('proxmate-domain-debugger');
-                    //if (debugger_status == undefined) {
-                    //    debugger_status = true;
-                    //    Storage.set('proxmate-domain-debugger', debugger_status);
-                    //}
+                            phishing_status = Storage.get('proxmate_phishing_status');
+                            if (phishing_status == undefined) {
+                                phishing_status = true;
+                                Storage.set('proxmate_phishing_status', phishing_status);
+                            }
 
-                    _self.start();
-                    _self.privacy_list.last_update = new Date();
-                    //_self.update_phishing_list(function (data) {
-                    //    Storage.set("yn_phishing_list", data);
-                    //    _self.parse_phishing_list(data);
-                    //});
+                            ad_blocking_status = Storage.get('proxmate_ad_blocking_status');
+                            if (ad_blocking_status == undefined) {
+                                ad_blocking_status = true;
+                                Storage.set('proxmate_ad_blocking_status', ad_blocking_status);
+                            }
+
+                            //debugger_status = Storage.get('proxmate-domain-debugger');
+                            //if (debugger_status == undefined) {
+                            //    debugger_status = true;
+                            //    Storage.set('proxmate-domain-debugger', debugger_status);
+                            //}
+
+                            console.log(_self.optionsss);
+                            console.log(_self.privacy_list);
+                            _self.privacy_list.last_update = new Date();
+                            _self.start();
+                        });
+                    });
                 });
             });
         };
 
         PrivacyManager.prototype.update_tracking_list = function (callback) {
-            var data = Storage.get("yn_tracking_list");
+            //var data = Storage.get("yn_tracking_list");
+            var data = false;
             if (data) {
                 callback(data);
                 return;
             }
             $.get(this.tracking_list_url,
                 function (data) {
+                    //Storage.set("yn_tracking_list", data);
                     callback(data)
                 }
             );
         };
 
         PrivacyManager.prototype.update_phishing_list = function (callback) {
-            var data = Storage.get("yn_phishing_list");
+            //var data = Storage.get("yn_phishing_list");
+            var data = false;
             if (data) {
                 callback(data);
                 return;
             }
             $.get(this.phishing_list_url,
                 function (data) {
+                    //Storage.set("yn_phishing_list", data);
+                    callback(data)
+                }
+            );
+        };
+
+        PrivacyManager.prototype.update_ad_blocking_list = function (callback) {
+            //var data = Storage.get("yn_ad_blocking_list");
+            var data = false;
+            if (data) {
+                callback(data);
+                return;
+            }
+            $.get(this.ad_blocking_list_url,
+                function (data) {
+                    //Storage.set("yn_malware_list", data);
                     callback(data)
                 }
             );
         };
 
         PrivacyManager.prototype.update_malware_list = function (callback) {
-            var data = Storage.get("yn_malware_list");
+            //var data = Storage.get("yn_malware_list");
+            var data = false;
             if (data) {
                 callback(data);
                 return;
             }
             $.get(this.malware_list_url,
                 function (data) {
+                    //Storage.set("yn_malware_list", data);
                     callback(data)
                 }
             );
@@ -144,7 +179,7 @@
             }
 
             //find & remove port number
-            domain = domain.split(':')[0];
+            domain = domain.split(':')[0].replace('www.', '');
 
             return domain;
         };
@@ -156,6 +191,7 @@
             var _self = this;
 
             this.tabs = {};
+            this.css_tabs = {};
             chrome.webRequest.onBeforeRequest.removeListener(this.listener);
         };
 
@@ -163,6 +199,38 @@
             var _self = this;
 
             this.tabs = {};
+
+            chrome.tabs.onUpdated.addListener(function (tabId, info, tab) {
+                let ad_blocking_status = Storage.get('proxmate_ad_blocking_status');
+                //console.log(info.status, tab.url)
+                if (info.status == 'loading' && ad_blocking_status) update_css(tab);
+            });
+
+            function update_css(tab) {
+
+                chrome.tabs.insertCSS(tab.id, {
+                    file: "/ressources/css/adblock-id.css",
+                    runAt: "document_start"
+                });
+                chrome.tabs.insertCSS(tab.id, {
+                    file: "/ressources/css/adblock-class-a-k.css",
+                    runAt: "document_start"
+                });
+                chrome.tabs.insertCSS(tab.id, {
+                    file: "/ressources/css/adblock-class-l-z.css",
+                    runAt: "document_start"
+                });
+                chrome.tabs.insertCSS(tab.id, {
+                    file: "/ressources/css/adblock-tag.css",
+                    runAt: "document_start"
+                });
+
+                if (tab.id in _self.css_tabs && tab.url.indexOf(_self.css_tabs[tab.id].domain) > -1) {
+                    chrome.tabs.insertCSS(tab.id, {
+                        code: _self.css_tabs[tab.id].rules
+                    });
+                }
+            }
 
             this.listener = function (details) {
                 return _self.checker(details);
@@ -189,7 +257,7 @@
         //};
 
         PrivacyManager.prototype.checker = function (request_info) {
-            var domain, is_third_party, is_main = false, match_parameters = {}, global_status = Storage.get('proxmate_global_status');;
+            var domain, is_third_party, is_main = false, match_parameters = {}, global_status = Storage.get('proxmate_global_status');
             var _self = this;
 
             if (!global_status) {
@@ -197,40 +265,70 @@
             }
 
             if (request_info.type == 'main_frame') {
-                _self.tabs[request_info.tabId] = request_info.url;
+                _self.tabs[request_info.tabId] = {
+                    url: request_info.url,
+                    domain: _self.extractDomain(request_info.url)
+                };
                 is_main = true;
             }
 
+            if (request_info.url.indexOf('proxmate.me') != -1 ||
+                (
+                    request_info.tabId &&
+                    request_info.tabId in _self.tabs &&
+                    _self.tabs[request_info.tabId].domain == 'proxmate.me'
+                )
+            ) {
+                return
+            }
+
             if (request_info.tabId in _self.tabs) {
-                match_parameters["domain"] = _self.extractDomain(_self.tabs[request_info.tabId]);
-                match_parameters["is_third_party"] = !request_info.url.indexOf(match_parameters["domain"]) > -1;
+                match_parameters["domain"] = _self.tabs[request_info.tabId].domain;
+                match_parameters["url_domain"] = _self.extractDomain(request_info.url);
+                match_parameters["third-party"] = match_parameters["url_domain"].indexOf(match_parameters["domain"]) == -1;
+            } else {
+                match_parameters["url_domain"] = _self.extractDomain(request_info.url);
+                match_parameters["domain"] = _self.extractDomain(request_info.url);
+                match_parameters["third-party"] = _self.extractDomain(request_info.url).indexOf(match_parameters["domain"]) == -1;
             }
 
             match_parameters["elementTypeMask"] = _self.elementTypeMaskMap.get(request_info.type);
-
             var result = _self.matches(
                 request_info.url,
                 match_parameters,
                 is_main
             );
-
-            //if (result && request_info.tabId > 0) {
-                //_self.displayResult(request_info.tabId, _self.extractDomain(request_info.url));
-            //}
-
             switch (result) {
                 case 1:
-                    //console.error(1, request_info.url);
                     return {cancel: true};
                     break;
                 case 2:
-                    //console.error(2, request_info.url)
                     return {redirectUrl: "https://proxmate.me/warning/"};
                     break;
                 case 3:
-                    //console.error(2, request_info.url)
                     return {redirectUrl: "https://proxmate.me/warning/"};
                     break;
+                case 5:
+                    return {cancel: true};
+                    break;
+                default:
+                    if (result.length > 0) {
+                        let rules = "";
+                        for (let i = 0; i < result.length; i++) {
+                            if (i == result.length - 1) {
+                                rules += result[i]
+                            } else {
+                                rules += result[i] + ", "
+                            }
+                        }
+
+                        rules += " { display: none }";
+
+                        _self.css_tabs[request_info.tabId] = {
+                            domain: _self.tabs[request_info.tabId].domain,
+                            rules: rules
+                        };
+                    }
             }
         };
 
@@ -260,7 +358,7 @@
                 if (endPos === -1) {
                     endPos = input.length;
                 }
-                var filter = input.substring(startPos, endPos) + "$main_frame";
+                var filter = input.substring(startPos, endPos);
 
                 if (_self.whitelisted_rules.indexOf(filter) != -1) {
                     startPos = endPos + 1;
@@ -302,6 +400,16 @@
 
         PrivacyManager.prototype.parse_tracking_list = function (input) {
             var _self = this, startPos = 0, endPos = input.length, newline = '\n';
+
+            _self.privacy_list.trackingRules.htmlRuleFilters = _self.privacy_list.trackingRules.htmlRuleFilters || [];
+            _self.privacy_list.trackingRules.exceptionFilters = _self.privacy_list.trackingRules.exceptionFilters || [];
+            _self.privacy_list.trackingRules.domainFilters = _self.privacy_list.trackingRules.domainFilters || [];
+            _self.privacy_list.trackingRules.genericFilters = _self.privacy_list.trackingRules.genericFilters || [];
+
+            input = input + '\n@@||cxense.com^$domain=abc.go.com';
+            input = input + '\n@@||w88.go.com^$domain=abc.go.com';
+            input = input + '\n@@||scorecardresearch.com^$domain=abc.go.com';
+
             while (startPos <= input.length) {
                 endPos = input.indexOf(newline, startPos);
                 if (endPos === -1) {
@@ -319,11 +427,61 @@
                 var parsedFilterData = {};
                 if (_self.parseFilter(filter, parsedFilterData)) {
                     if (parsedFilterData.htmlRuleSelector) {
-                        _self.privacy_list.htmlRuleFilters.push(parsedFilterData);
+                        _self.privacy_list.trackingRules.htmlRuleFilters.push(parsedFilterData);
                     } else if (parsedFilterData.isException) {
-                        _self.privacy_list.exceptionFilters.push(parsedFilterData);
+                        _self.privacy_list.trackingRules.exceptionFilters.push(parsedFilterData);
+                    //} else if (parsedFilterData.hasDomainRule) {
+                    //    _self.privacy_list.trackingRules.domainFilters.push(parsedFilterData);
                     } else {
-                        _self.privacy_list.filters.push(parsedFilterData);
+                        _self.privacy_list.trackingRules.genericFilters.push(parsedFilterData);
+                        //if ("binaryOptions" in parsedFilterData.options || "elementTypeMask" in parsedFilterData.options) {
+                        //    //console.log(parsedFilterData.options)
+                        //} else {
+                        //    _self.privacy_list.trackingRules.genericFilters.push(parsedFilterData);
+                        //}
+                    }
+                }
+                startPos = endPos + 1;
+            }
+        };
+
+        PrivacyManager.prototype.parse_ad_blocking_list = function (input) {
+            var _self = this, startPos = 0, endPos = input.length, newline = '\n';
+
+            _self.privacy_list.adBlockingRules.htmlRuleFilters = _self.privacy_list.adBlockingRules.htmlRuleFilters || [];
+            _self.privacy_list.adBlockingRules.exceptionFilters = _self.privacy_list.adBlockingRules.exceptionFilters || [];
+            _self.privacy_list.adBlockingRules.domainFilters = _self.privacy_list.adBlockingRules.domainFilters || [];
+            _self.privacy_list.adBlockingRules.genericFilters = _self.privacy_list.adBlockingRules.genericFilters || [];
+
+            while (startPos <= input.length) {
+                endPos = input.indexOf(newline, startPos);
+                if (endPos === -1) {
+                    newline = '\r';
+                    endPos = input.indexOf(newline, startPos);
+                }
+                if (endPos === -1) {
+                    endPos = input.length;
+                }
+                var filter = input.substring(startPos, endPos);
+                if (_self.whitelisted_rules.indexOf(filter) != -1) {
+                    startPos = endPos + 1;
+                    continue;
+                }
+                var parsedFilterData = {};
+                if (_self.parseFilter(filter, parsedFilterData)) {
+                    if (parsedFilterData.htmlRuleSelector) {
+                        _self.privacy_list.adBlockingRules.htmlRuleFilters.push(parsedFilterData);
+                    } else if (parsedFilterData.isException) {
+                        _self.privacy_list.adBlockingRules.exceptionFilters.push(parsedFilterData);
+                    //} else if (parsedFilterData.hasDomainRule) {
+                    //    _self.privacy_list.adBlockingRules.domainFilters.push(parsedFilterData);
+                    } else {
+                        _self.privacy_list.adBlockingRules.genericFilters.push(parsedFilterData);
+                        //if ("binaryOptions" in parsedFilterData.options || "elementTypeMask" in parsedFilterData.options) {
+                        //    //console.log(parsedFilterData.options)
+                        //} else {
+                        //    _self.privacy_list.adBlockingRules.genericFilters.push(parsedFilterData);
+                        //}
                     }
                 }
                 startPos = endPos + 1;
@@ -332,7 +490,9 @@
 
         PrivacyManager.prototype.parseHTMLFilter = function (input, index, parsedFilterData) {
             var domainsStr = input.substring(0, index);
-            parsedFilterData.options = {};
+            parsedFilterData.options = {
+                check_options: []
+            };
             if (domainsStr.length > 0) {
                 this.parseDomains(domainsStr, ',', parsedFilterData.options);
             }
@@ -364,13 +524,15 @@
         PrivacyManager.prototype.parseOptions = function (input) {
             var _self = this;
             var output = {
-                binaryOptions: new Set()
+                binaryOptions: new Set(),
+                check_options: ['third_party_option']
             };
             input.split(',').forEach(function (option) {
                 option = option.trim();
                 if (option.startsWith('domain=')) {
                     var domainString = option.split('=')[1].trim();
                     _self.parseDomains(domainString, '|', output);
+                    output.check_options.push('domain_option')
                 } else {
                     var optionWithoutPrefix = option[0] === '~' ? option.substring(1) : option;
                     if (_self.elementTypeMaskMap.has(optionWithoutPrefix)) {
@@ -379,6 +541,7 @@
                         } else {
                             output.elementTypeMask |= _self.elementTypeMaskMap.get(optionWithoutPrefix);
                         }
+                        output.check_options.push('elementTypeMask_option')
                     }
                     output.binaryOptions.add(option);
                 }
@@ -391,6 +554,7 @@
 
             input = input.trim();
             parsedFilterData.rawFilter = input;
+            parsedFilterData.filter_methods = [];
 
             // Check for comment or nothing
             if (input.length === 0) {
@@ -428,13 +592,17 @@
                 // Get rid of the trailing options for the rest of the parsing
                 input = input.substring(0, index);
             } else {
-                parsedFilterData.options = {};
+                parsedFilterData.options = {
+                    check_options: []
+                };
             }
 
             // Check for a regex
-            parsedFilterData.isRegex = input[beginIndex] === '/' && input[input.length - 1] === '/' && beginIndex !== input.length - 1;
-            if (parsedFilterData.isRegex) {
+            if (input[beginIndex] === '/' && input[input.length - 1] === '/' && beginIndex !== input.length - 1) {
+                parsedFilterData.isRegex = true;
                 parsedFilterData.data = input.slice(beginIndex + 1, -1);
+                parsedFilterData.regex = new RegExp(parsedFilterData.data);
+                parsedFilterData.filter_methods.push("is_regex");
                 return true;
             }
 
@@ -459,7 +627,31 @@
                 input = input.substring(0, input.length - 1);
             }
 
+            if (parsedFilterData.leftAnchored && parsedFilterData.rightAnchored) {
+                parsedFilterData.filter_methods.push("left_right_anchored")
+            } else if (parsedFilterData.leftAnchored) {
+                parsedFilterData.filter_methods.push("left_anchored")
+            } else if (parsedFilterData.rightAnchored) {
+                parsedFilterData.filter_methods.push("right_anchored")
+            } else if (parsedFilterData.hostAnchored) {
+                parsedFilterData.filter_methods.push("host_anchored")
+            }
+
             parsedFilterData.data = input.substring(beginIndex) || '*';
+            if( parsedFilterData.rawFilter == "||docs.google.com/stat|$xmlhttprequest") {
+                console.log(parsedFilterData.data.split('*').length, parsedFilterData.data != '*')
+                console.log(parsedFilterData.data.split("*"))
+            }
+
+            if (parsedFilterData.data.split('*').length && parsedFilterData.data != '*') {
+                parsedFilterData.isWildcard = true;
+                parsedFilterData.parts = parsedFilterData.data.split('*')
+                parsedFilterData.filter_methods.push("wildcard");
+            }
+
+            if (parsedFilterData.options.check_options.indexOf("domain_option") != -1) {
+                parsedFilterData.hasDomainRule = true
+            }
 
             return true;
         };
@@ -473,17 +665,8 @@
             return -1;
         };
 
-        PrivacyManager.prototype.matchOptions = function (parsedFilterData, input, contextParams) {
+        PrivacyManager.prototype.matchHTMLOptions = function (parsedFilterData, input, contextParams) {
             var _self = this;
-            if (contextParams.elementTypeMask !== undefined && parsedFilterData.options) {
-                if (parsedFilterData.options.elementTypeMask !== undefined && !(parsedFilterData.options.elementTypeMask & contextParams.elementTypeMask)) {
-                    return false;
-                }
-
-                if (parsedFilterData.options.skipElementTypeMask !== undefined && parsedFilterData.options.skipElementTypeMask & contextParams.elementTypeMask) {
-                    return false;
-                }
-            }
 
             // Domain option check
             if (contextParams.domain !== undefined && parsedFilterData.options) {
@@ -511,8 +694,25 @@
 
                     // If we have none left over, then we shouldn't consider this a match
                     if (shouldBlockDomains.length === 0 && parsedFilterData.options.domains.length !== 0 || shouldBlockDomains.length > 0 && leftOverBlocking.length === 0 || shouldSkipDomains.length > 0 && leftOverSkipping.length > 0) {
-                        return false;
+                        return true;
                     }
+
+                    return false;
+                    //return true;
+                }
+            }
+            return true;
+        };
+
+        PrivacyManager.prototype.matchOptions = function (parsedFilterData, input, contextParams) {
+            var _self = this;
+
+            // Domain option check
+            if (contextParams.domain !== undefined && parsedFilterData.options) {
+                if (parsedFilterData.options.domains || parsedFilterData.options.skipDomains) {
+                    // Get the domains that should be considered
+
+
                 }
             }
 
@@ -520,7 +720,7 @@
             if (contextParams['third-party'] !== undefined) {
                 // Is the current rule check for third party only?
                 if (_self.filterDataContainsOption(parsedFilterData, 'third-party')) {
-                    var inputHost = _self.getUrlHost(input);
+                    var inputHost = contextParams.url_domain;
                     var inputHostIsThirdParty = _self.isThirdPartyHost(parsedFilterData.host, inputHost);
                     if (inputHostIsThirdParty || !contextParams['third-party']) {
                         return false;
@@ -531,24 +731,29 @@
             return true;
         };
 
-        PrivacyManager.prototype.hasMatchingFilters = function (filters, input, contextParams, cachedInputData) {
+        PrivacyManager.prototype.hasMatchingFilters = function (filters, input, contextParams) {
             var _self = this;
             var foundFilter = filters.find(function (parsedFilterData2) {
-                return _self.matchesFilter(parsedFilterData2, input, contextParams, cachedInputData);
+                return _self.matchesFilter(parsedFilterData2, input, contextParams);
             });
-            if (foundFilter && cachedInputData.matchedFilters && foundFilter.rawFilter) {
 
-                // increment the count of matches
-                // we store an extra object and a count so that in the future
-                // other bits of information can be recorded during match time
-                if (cachedInputData.matchedFilters[foundFilter.rawFilter]) {
-                    cachedInputData.matchedFilters[foundFilter.rawFilter].matches += 1;
-                } else {
-                    cachedInputData.matchedFilters[foundFilter.rawFilter] = {matches: 1};
-                }
-            }
+            //if (foundFilter) { console.log(input, contextParams, foundFilter) }
 
             return !!foundFilter;
+        };
+
+        PrivacyManager.prototype.hasMatchingHTMLFilters = function (filters, input, contextParams) {
+            var _self = this;
+            var rules = []
+            var foundFilter = filters.find(function (parsedFilterData2) {
+                if (_self.matchesHTMLFilter(parsedFilterData2, input, contextParams)) {
+                    rules.push(parsedFilterData2.htmlRuleSelector);
+                }
+            });
+
+            //if (rules) { console.log(input, contextParams, foundFilter) }
+
+            return rules;
         };
 
         PrivacyManager.prototype.isThirdPartyHost = function (baseContextHost, testHost) {
@@ -569,61 +774,107 @@
             return index;
         };
 
-        PrivacyManager.prototype.matchesFilter = function (parsedFilterData, input, contextParams, cachedInputData) {
-            var _self = this;
-            if (!_self.matchOptions(parsedFilterData, input, contextParams)) {
+        PrivacyManager.prototype.left_anchored = function (parsedFilterData, input, contextParams) {
+            return input.substring(0, parsedFilterData.data.length) === parsedFilterData.data
+        };
+
+        PrivacyManager.prototype.elementTypeMask_option = function (parsedFilterData, input, contextParams) {
+            if (parsedFilterData.options.elementTypeMask !== undefined && !(parsedFilterData.options.elementTypeMask & contextParams.elementTypeMask)) {
                 return false;
             }
 
-            // Check for a regex match
-            if (parsedFilterData.isRegex) {
-                if (!parsedFilterData.regex) {
-                    parsedFilterData.regex = new RegExp(parsedFilterData.data);
+            return !(parsedFilterData.options.skipElementTypeMask !== undefined && parsedFilterData.options.skipElementTypeMask & contextParams.elementTypeMask);
+        };
+
+        PrivacyManager.prototype.third_party_option = function (parsedFilterData, input, contextParams) {
+            if (this.filterDataContainsOption(parsedFilterData, 'third-party')) {
+                var inputHost = contextParams.url_domain;
+                var inputHostIsThirdParty = this.isThirdPartyHost(parsedFilterData.host, inputHost);
+                if (inputHostIsThirdParty || !contextParams['third-party']) {
+                    return false;
                 }
-                return parsedFilterData.regex.test(input);
             }
+            return true;
+        };
 
-            // Check for both left and right anchored
-            if (parsedFilterData.leftAnchored && parsedFilterData.rightAnchored) {
-                return parsedFilterData.data === input;
-            }
+        PrivacyManager.prototype.domain_option = function (parsedFilterData, input, contextParams) {
+            var _self = this;
+            var shouldBlockDomains = parsedFilterData.options.domains.filter(function (domain) {
+                return !_self.isThirdPartyHost(domain, contextParams.domain);
+            });
 
-            // Check for right anchored
-            if (parsedFilterData.rightAnchored) {
-                return input.slice(-parsedFilterData.data.length) === parsedFilterData.data;
-            }
+            var shouldSkipDomains = parsedFilterData.options.skipDomains.filter(function (domain) {
+                return !_self.isThirdPartyHost(domain, contextParams.domain);
+            });
+            var leftOverBlocking = shouldBlockDomains.filter(function (shouldBlockDomain) {
+                return shouldSkipDomains.every(function (shouldSkipDomain) {
+                    return _self.isThirdPartyHost(shouldBlockDomain, shouldSkipDomain);
+                });
+            });
+            var leftOverSkipping = shouldSkipDomains.filter(function (shouldSkipDomain) {
+                return shouldBlockDomains.every(function (shouldBlockDomain) {
+                    return _self.isThirdPartyHost(shouldSkipDomain, shouldBlockDomain);
+                });
+            });
 
-            // Check for left anchored
-            if (parsedFilterData.leftAnchored) {
-                return input.substring(0, parsedFilterData.data.length) === parsedFilterData.data;
-            }
+            // If we have none left over, then we shouldn't consider this a match
+            return !(shouldBlockDomains.length === 0 && parsedFilterData.options.domains.length !== 0 || shouldBlockDomains.length > 0 && leftOverBlocking.length === 0 || shouldSkipDomains.length > 0 && leftOverSkipping.length > 0);
+        };
 
-            // Check for domain name anchored
-            if (parsedFilterData.hostAnchored) {
-                if (!cachedInputData.currentHost) {
-                    cachedInputData.currentHost = _self.getUrlHost(input);
-                }
+        PrivacyManager.prototype.right_anchored = function (parsedFilterData, input, contextParams) {
+            return input.slice(-parsedFilterData.data.length) === parsedFilterData.data;
+        };
 
-                return !_self.isThirdPartyHost(parsedFilterData.host, cachedInputData.currentHost) &&
-                    _self.indexOfFilter(input, parsedFilterData.data) !== -1;
-            }
+        PrivacyManager.prototype.left_right_anchored = function (parsedFilterData, input, contextParams) {
+            return parsedFilterData.data === input;
+        };
+
+        PrivacyManager.prototype.host_anchored = function (parsedFilterData, input, contextParams) {
+            return !this.isThirdPartyHost(parsedFilterData.host, this.getUrlHost(input)) && this.indexOfFilter(input, parsedFilterData.data) !== -1
+        };
+
+        PrivacyManager.prototype.is_regex = function (parsedFilterData, input, contextParams) {
+            return parsedFilterData.regex.test(input)
+        };
+
+        PrivacyManager.prototype.wildcard = function (parsedFilterData, input, contextParams) {
             try {
-
-                // Wildcard match comparison
-                var parts = parsedFilterData.data.split('*');
                 var index = 0;
-                for (var part of parts) {
-                    var newIndex = _self.indexOfFilter(input, part, index);
+                for (var part of parsedFilterData.parts) {
+
+                    var newIndex = this.indexOfFilter(input, part, index);
+
                     if (newIndex === -1) {
                         return false;
                     }
                     index = newIndex + part.length;
                 }
             } catch (e) {
-                console.error(input, parsedFilterData);
+                console.error(e, input, parsedFilterData);
+            }
+            return true;
+        };
+
+
+        PrivacyManager.prototype.matchesHTMLFilter = function (parsedFilterData, input, contextParams) {
+            return !this.matchHTMLOptions(parsedFilterData, input, contextParams);
+        };
+
+        PrivacyManager.prototype.matchesFilter = function (parsedFilterData, input, contextParams) {
+            var _self = this;
+            var optionMatcher = parsedFilterData.options.check_options.every(function (method) {
+                return _self[method](parsedFilterData, input, contextParams);
+            });
+
+            if (!optionMatcher) {
+                return false
             }
 
-            return true;
+            var methodMatcher = parsedFilterData.filter_methods.find(function (option) {
+                return _self[option](parsedFilterData, input, contextParams);
+            });
+            //if (methodMatcher) { console.log(methodMatcher, parsedFilterData, input) }
+            return !!methodMatcher;
         };
 
         PrivacyManager.prototype.getUrlHost = function (input) {
@@ -683,31 +934,32 @@
         PrivacyManager.prototype.matches = function (input, contextParams, isMain) {
             var _self = this;
 
-            cachedInputData = {
-                matchedFilters: {}
-            };
-
+            var ad_blocking_status = Storage.get('proxmate_ad_blocking_status');
+            if (!isMain && ad_blocking_status && _self.hasMatchingFilters(_self.privacy_list.adBlockingRules.genericFilters, input, contextParams)) {
+                if (_self.hasMatchingFilters(_self.privacy_list.adBlockingRules.exceptionFilters, input, contextParams)) {
+                    return false;
+                }
+                return 5;
+            }
             var privacy_status = Storage.get('proxmate_privacy_status');
-            if (!isMain && privacy_status && _self.hasMatchingFilters(_self.privacy_list.filters, input, contextParams, cachedInputData)) {
-                if (_self.hasMatchingFilters(_self.privacy_list.exceptionFilters, input, contextParams, cachedInputData)) {
-                    cachedInputData.notMatchCount++;
+            if (!isMain && privacy_status && _self.hasMatchingFilters(_self.privacy_list.trackingRules.genericFilters, input, contextParams)) {
+                if (_self.hasMatchingFilters(_self.privacy_list.trackingRules.exceptionFilters, input, contextParams)) {
                     return false;
                 }
                 return 1;
             }
-
             var malware_status = Storage.get('proxmate_malware_status');
-
-            if (isMain && malware_status && _self.hasMatchingFilters(_self.privacy_list.malwareRules, input, contextParams, cachedInputData)) {
+            if (isMain && malware_status && _self.hasMatchingFilters(_self.privacy_list.malwareRules, input, contextParams)) {
                 return 2;
             }
-
-            //var phishing_status = Storage.get('proxmate_phishing_status');
-            //
-            //if (isMain && phishing_status && _self.hasMatchingFilters(_self.privacy_list.phishingRules, input, contextParams, cachedInputData)) {
-            //    return 3;
-            //}
-
+            var phishing_status = Storage.get('proxmate_phishing_status');
+            if (isMain && phishing_status && _self.hasMatchingFilters(_self.privacy_list.phishingRules, input, contextParams)) {
+                return 3;
+            }
+            if (isMain && ad_blocking_status) {
+                let rules = _self.hasMatchingHTMLFilters(_self.privacy_list.adBlockingRules.htmlRuleFilters, input, contextParams);
+                return rules
+            }
             return false;
         };
 

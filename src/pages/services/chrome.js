@@ -27,11 +27,23 @@
       setMalwareStatus: function (status, callback) {
         return emitMessage('setMalwareStatus', { newStatus: status }, callback);
       },
+      setAntiPhishingStatus: function (status, callback) {
+        return emitMessage('setAntiPhishingStatus', { newStatus: status }, callback);
+      },
+      setAdBlockingStatus: function (status, callback) {
+        return emitMessage('setAdBlockingStatus', { newStatus: status }, callback);
+      },
       getPrivacyStatus: function (callback) {
         return emitMessage('getPrivacyStatus', {}, callback);
       },
       getMalwareStatus: function (callback) {
         return emitMessage('getMalwareStatus', {}, callback);
+      },
+      getAntiPhishingStatus: function (callback) {
+        return emitMessage('getAntiPhishingStatus', {}, callback);
+      },
+      getAbBlockingStatus: function (callback) {
+        return emitMessage('getAdBlockingStatus', {}, callback);
       },
       getInstalledPackages: function (callback) {
         return emitMessage('getInstalledPackages', {}, callback);

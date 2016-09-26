@@ -1415,6 +1415,10 @@ hr {
     background-image: url(../../../ressources/images/tool.svg)
 }
 
+.btn.btn-chat {
+    background-image: url(../../../ressources/images/chat.svg)
+}
+
 .btn.btn-pencil.btn-action {
     background-image: url(../../../ressources/images/pencil.svg);
     width: 240px
