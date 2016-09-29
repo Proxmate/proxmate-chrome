@@ -18,19 +18,20 @@
           $('.alert.alert-danger').show(500);
           return;
         }
+        $('.alert.alert-info').show(200);
         Chrome.requestActivation(_email, function (response) {
           $('.alert-card').css('opacity', 0);
           if (!response.success && response.error == 'disposable_email') {
+            $('.alert.alert-info').hide();
             $('.alert.alert-danger').text('Invalid email address!');
             $('.alert.alert-danger').show(500);
 
             return;
           }
+          $('.alert.alert-info').hide();
           $('.container.step1').hide();
           $('.container.step2').show();
         });
-        //$('.container.step1').hide();
-        //$('.container.step2').show();
         e.preventDefault();
       });
     }
