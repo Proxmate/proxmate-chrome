@@ -11,19 +11,26 @@
       }
       $('.post-install form').submit(function (e) {
         e.preventDefault();
+        $('.alert.alert-danger').hide(200);
         var _email = $('#email-field').val();
         if (!isValidEmailAddress(_email)) {
-          $('.alert-card').css('opacity', 1);
+          $('.alert.alert-danger').text('Please provide a valid email address!');
+          $('.alert.alert-danger').show(500);
           return;
         }
         Chrome.requestActivation(_email, function (response) {
           $('.alert-card').css('opacity', 0);
-          //if (!response.success && response.error == 'user_exists') {}
+          if (!response.success && response.error == 'disposable_email') {
+            $('.alert.alert-danger').text('Invalid email address!');
+            $('.alert.alert-danger').show(500);
+
+            return;
+          }
           $('.container.step1').hide();
           $('.container.step2').show();
         });
-        $('.container.step1').hide();
-        $('.container.step2').show();
+        //$('.container.step1').hide();
+        //$('.container.step2').show();
         e.preventDefault();
       });
     }

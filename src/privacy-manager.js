@@ -33,6 +33,7 @@
                 MAINFRAME: 0o1000,
                 SUBFRAME: 0o2000,
                 OTHER: 0o400,
+                POPUP: 0o4000
             };
 
             /**
@@ -49,7 +50,8 @@
                 ['document', this.elementTypes.DOCUMENT],
                 ['other', this.elementTypes.OTHER],
                 ['sub_frame', this.elementTypes.SUBFRAME],
-                ['main_frame', this.elementTypes.MAINFRAME]
+                ['main_frame', this.elementTypes.MAINFRAME],
+                ['popup', this.elementTypes.POPUP]
             ]);
 
             this.separatorCharacters = ':?/=^';
@@ -93,14 +95,6 @@
                                 Storage.set('proxmate_ad_blocking_status', ad_blocking_status);
                             }
 
-                            //debugger_status = Storage.get('proxmate-domain-debugger');
-                            //if (debugger_status == undefined) {
-                            //    debugger_status = true;
-                            //    Storage.set('proxmate-domain-debugger', debugger_status);
-                            //}
-
-                            console.log(_self.optionsss);
-                            console.log(_self.privacy_list);
                             _self.privacy_list.last_update = new Date();
                             _self.start();
                         });
@@ -199,15 +193,14 @@
             var _self = this;
 
             this.tabs = {};
+            this.css_tabs = {};
 
             chrome.tabs.onUpdated.addListener(function (tabId, info, tab) {
                 let ad_blocking_status = Storage.get('proxmate_ad_blocking_status');
-                //console.log(info.status, tab.url)
                 if (info.status == 'loading' && ad_blocking_status) update_css(tab);
             });
 
             function update_css(tab) {
-
                 chrome.tabs.insertCSS(tab.id, {
                     file: "/ressources/css/adblock-id.css",
                     runAt: "document_start"
@@ -284,12 +277,12 @@
 
             if (request_info.tabId in _self.tabs) {
                 match_parameters["domain"] = _self.tabs[request_info.tabId].domain;
-                match_parameters["url_domain"] = _self.extractDomain(request_info.url);
+                match_parameters["url_domain"] = _self.getUrlHost(request_info.url);
                 match_parameters["third-party"] = match_parameters["url_domain"].indexOf(match_parameters["domain"]) == -1;
             } else {
-                match_parameters["url_domain"] = _self.extractDomain(request_info.url);
+                match_parameters["url_domain"] = _self.getUrlHost(request_info.url);
                 match_parameters["domain"] = _self.extractDomain(request_info.url);
-                match_parameters["third-party"] = _self.extractDomain(request_info.url).indexOf(match_parameters["domain"]) == -1;
+                match_parameters["third-party"] = match_parameters["url_domain"].indexOf(match_parameters["domain"]) == -1;
             }
 
             match_parameters["elementTypeMask"] = _self.elementTypeMaskMap.get(request_info.type);
@@ -298,18 +291,15 @@
                 match_parameters,
                 is_main
             );
+
             switch (result) {
                 case 1:
+                case 5:
                     return {cancel: true};
                     break;
                 case 2:
-                    return {redirectUrl: "https://proxmate.me/warning/"};
-                    break;
                 case 3:
                     return {redirectUrl: "https://proxmate.me/warning/"};
-                    break;
-                case 5:
-                    return {cancel: true};
                     break;
                 default:
                     if (result.length > 0) {
@@ -638,14 +628,10 @@
             }
 
             parsedFilterData.data = input.substring(beginIndex) || '*';
-            if( parsedFilterData.rawFilter == "||docs.google.com/stat|$xmlhttprequest") {
-                console.log(parsedFilterData.data.split('*').length, parsedFilterData.data != '*')
-                console.log(parsedFilterData.data.split("*"))
-            }
 
-            if (parsedFilterData.data.split('*').length && parsedFilterData.data != '*') {
+            if (parsedFilterData.data.indexOf('*') != -1 && parsedFilterData.data.split('*').length && parsedFilterData.data != '*') {
                 parsedFilterData.isWildcard = true;
-                parsedFilterData.parts = parsedFilterData.data.split('*')
+                parsedFilterData.parts = parsedFilterData.data.split('*');
                 parsedFilterData.filter_methods.push("wildcard");
             }
 
@@ -701,33 +687,6 @@
                     //return true;
                 }
             }
-            return true;
-        };
-
-        PrivacyManager.prototype.matchOptions = function (parsedFilterData, input, contextParams) {
-            var _self = this;
-
-            // Domain option check
-            if (contextParams.domain !== undefined && parsedFilterData.options) {
-                if (parsedFilterData.options.domains || parsedFilterData.options.skipDomains) {
-                    // Get the domains that should be considered
-
-
-                }
-            }
-
-            // If we're in the context of third-party site, then consider third-party option checks
-            if (contextParams['third-party'] !== undefined) {
-                // Is the current rule check for third party only?
-                if (_self.filterDataContainsOption(parsedFilterData, 'third-party')) {
-                    var inputHost = contextParams.url_domain;
-                    var inputHostIsThirdParty = _self.isThirdPartyHost(parsedFilterData.host, inputHost);
-                    if (inputHostIsThirdParty || !contextParams['third-party']) {
-                        return false;
-                    }
-                }
-            }
-
             return true;
         };
 
@@ -830,7 +789,7 @@
         };
 
         PrivacyManager.prototype.host_anchored = function (parsedFilterData, input, contextParams) {
-            return !this.isThirdPartyHost(parsedFilterData.host, this.getUrlHost(input)) && this.indexOfFilter(input, parsedFilterData.data) !== -1
+            return !this.isThirdPartyHost(parsedFilterData.host, contextParams.url_domain) && this.indexOfFilter(input, parsedFilterData.data) !== -1
         };
 
         PrivacyManager.prototype.is_regex = function (parsedFilterData, input, contextParams) {
@@ -855,7 +814,6 @@
             return true;
         };
 
-
         PrivacyManager.prototype.matchesHTMLFilter = function (parsedFilterData, input, contextParams) {
             return !this.matchHTMLOptions(parsedFilterData, input, contextParams);
         };
@@ -873,7 +831,9 @@
             var methodMatcher = parsedFilterData.filter_methods.find(function (option) {
                 return _self[option](parsedFilterData, input, contextParams);
             });
-            //if (methodMatcher) { console.log(methodMatcher, parsedFilterData, input) }
+
+            // if (methodMatcher) { console.log(methodMatcher, parsedFilterData, input) }
+
             return !!methodMatcher;
         };
 
@@ -956,6 +916,7 @@
             if (isMain && phishing_status && _self.hasMatchingFilters(_self.privacy_list.phishingRules, input, contextParams)) {
                 return 3;
             }
+
             if (isMain && ad_blocking_status) {
                 let rules = _self.hasMatchingHTMLFilters(_self.privacy_list.adBlockingRules.htmlRuleFilters, input, contextParams);
                 return rules
