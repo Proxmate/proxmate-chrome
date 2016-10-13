@@ -1,12 +1,6 @@
 (function () {
     var Browser, Config, ServerManager, Storage;
 
-    Storage = require('./storage').Storage;
-
-    Config = require('./config').Config;
-
-    Browser = require('./browser').Browser;
-
     ServerManager = (function () {
         function ServerManager() {
         }
@@ -14,6 +8,9 @@
         ServerManager.prototype.servers = [];
 
         ServerManager.prototype.init = function (callback) {
+            Storage = require('./storage').Storage;
+            Config = require('./config').Config;
+            Browser = require('./browser').Browser;
             this.servers = this.loadServersFromStorage();
             if (this.servers.length > 0) {
                 this.fetchServerList(function () {
@@ -49,7 +46,7 @@
             var api_key, server, serverUrl;
             server = Config.get('primary_server');
             api_key = Storage.get('api_key');
-            serverUrl = "" + server + "api/server/list/" + api_key + "/?api_v=" + chrome.runtime.getManifest().version;
+            serverUrl = "" + server + "api/server/list/" + api_key + "/?api_v=" + Browser.getExtensionVersion();
             if (!api_key) {
                 api_key = encodeURIComponent(api_key);
                 //serverUrl = "" + server + "api/server/list/?key=" + api_key;

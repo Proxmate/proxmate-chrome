@@ -1,13 +1,12 @@
 (function () {
     var Browser, ProxyManager;
 
-    Browser = require('./browser').Browser;
-
     ProxyManager = (function () {
         function ProxyManager() {
         }
 
         ProxyManager.prototype.init = function () {
+            Browser = require('./browser').Browser;
         };
 
 

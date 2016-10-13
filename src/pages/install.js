@@ -23,7 +23,7 @@
           $('.alert-card').css('opacity', 0);
           if (!response.success && response.error == 'disposable_email') {
             $('.alert.alert-info').hide();
-            $('.alert.alert-danger').text('Invalid email address!');
+            $('.alert.alert-danger').text('Sorry, we do not support disposable emails.  Please register with Proxmate using a standard email address, thanks!');
             $('.alert.alert-danger').show(500);
 
             return;

@@ -1,14 +1,6 @@
 (function () {
     var Storage, MessageManager, Browser, Config, Status;
 
-    Storage = require('./storage').Storage;
-
-    Browser = require('./browser').Browser;
-
-    Status = require('./status').Status;
-
-    Config = require('./config').Config;
-
     MessageManager = (function () {
         function MessageManager() {
         }
@@ -18,9 +10,13 @@
          */
 
         MessageManager.prototype.init = function () {
+            Status = require('./status').Status;
+            Config = require('./config').Config;
+            Storage = require('./storage').Storage;
+            Browser = require('./browser').Browser;
             return ((function (_self) {
                 // Checking every 20 minutes for messages seconds for new messages
-                setInterval(function () {
+                Browser.setInterval(function () {
                     _self.get()
                 }, 1200000);
             })(this));
@@ -193,6 +189,10 @@
                 sticky: []
             };
 
+            if (!messages) {
+                return visible;
+            }
+
             for (var i = 0; i < messages.length; i++) {
 
                 // sticky messages are put in top of the list
@@ -261,7 +261,7 @@
 
             api_key = Storage.get('api_key');
             server = Config.get('primary_server');
-            checkerUrl = "" + server + "api/message/list/" + api_key + "/?api_v=" + chrome.runtime.getManifest().version;
+            checkerUrl = "" + server + "api/message/list/" + api_key + "/?api_v=" + Browser.getExtensionVersion();
 
             if (!api_key) {
                 return
@@ -270,11 +270,9 @@
             // warn user if plugin is going to expire soon
             _self.warnExpiry();
 
-            $.post(
+            Browser.ajax.POST(
                 checkerUrl,
-                {
-                    lastMessageTimestamp: "1273017600"
-                },
+                {},
                 function (data) {
                     var messages = Storage.get('messages-proxmate');
                     var _newMessages = 0;
@@ -369,13 +367,8 @@
                         }
                     }
 
-                    // TODO mode this in browser as a standalone function
-                    // update the numeric value shown for new messages
-                    chrome.browserAction.getBadgeText({}, function (value) {
-                        // make sure the value is numeric
+                    Browser.getIcontext(function(value) {
                         value = parseInt(value) || 0;
-
-                        //
                         if (!value && _newMessages > 0) {
                             Browser.setIcontext(_newMessages.toString())
                             return
@@ -395,10 +388,7 @@
 
                     Storage.set('messages-proxmate', messages);
                 }
-                ,
-                "json"
-            )
-            ;
+            );
         };
 
         return MessageManager;

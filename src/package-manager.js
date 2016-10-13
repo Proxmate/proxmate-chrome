@@ -1,25 +1,19 @@
 (function () {
     var Browser, Config, PackageManager, Storage;
 
-    Storage = require('./storage').Storage;
-
-    Config = require('./config').Config;
-
-    Browser = require('./browser').Browser;
-
     PackageManager = (function () {
         function PackageManager() {
         }
 
         PackageManager.prototype.checker = function (id, info, tabObject) {
             var _self = this;
+            var _rules_array = Storage.get("rulesArray")
             if (info.status == "complete") {
                 // check if any netflix tab opened
-                chrome.tabs.query({
-                        url: "*://*.netflix.com/watch*"
-                    },
+                Browser.queryTabs(
+                    ".netflix.com/watch",
                     function (_tabs) {
-                        if (!_tabs.length) {
+                        if (!_tabs.length || !_rules_array) {
                             // NO OPENED TAB
                             _self.removeRule(80, ['.ix.nflxvideo.net', '.isp.nflxvideo.net', 'www.netflix.com'], function () {
                                 Storage.set("rulesArray", []);
@@ -35,16 +29,13 @@
                 }
 
                 _self.send_tick(80);
-                // IS
-                var _rules_array = Storage.get("rulesArray");
-
                 // GET ID
                 var _url = tabObject.url.split('?')[0];
-                var _showId = _url.substr(_url.lastIndexOf('/') + 1)
+                var _showId = _url.substr(_url.lastIndexOf('/') + 1);
 
                 for (var i = 0; i < _rules_array.length; i++) {
                     // Id not in rules
-                    if (_rules_array[i].showId == _showId) {
+                    if (_url.indexOf(_showId) != -1) {
                         continue;
                     }
 
@@ -64,15 +55,18 @@
 
         };
 
+        PackageManager.prototype.checker_listener = function () {
+        };
+
         PackageManager.prototype.init = function () {
             var _self = this;
+            Storage = require('./storage').Storage;
+            Config = require('./config').Config;
+            Browser = require('./browser').Browser;
+            Runtime = require('./runtime').Runtime;
 
             // add listener for rules
-            if (!chrome.tabs.onUpdated.hasListener() && !chrome.tabs.onUpdated.hasListeners()) {
-                chrome.tabs.onUpdated.addListener(function (id, info, tabObject) {
-                    _self.checker(id, info, tabObject)
-                });
-            }
+            Browser.onTabUpdate(this.checker);
 
             return this.checkForUpdates();
         };
@@ -140,14 +134,12 @@
 
                     if (!_results.length) {
                         if (_requireRestart) {
-                            Runtime = require('./runtime').Runtime;
                             Runtime.restart();
                         }
                         return _results
                     }
 
                     _this.installProxmate(_results, function () {
-                        Runtime = require('./runtime').Runtime;
                         Runtime.restart();
                         return _results;
                     });
@@ -265,7 +257,7 @@
 
             Storage.set(package_id, changed_package);
 
-            Runtime = require('./runtime').Runtime;
+
             Runtime.restart();
             return callback()
         };
@@ -289,10 +281,8 @@
             if (!_rules_array) {
                 _rules_array = [];
             }
-
             if (installedPackages[package_id]) {
                 changed_package = Storage.get(package_id);
-
                 for (var i = 0; i < rules_array.length; i++) {
                     changed_package.routing.push({
                         contains: [rules_array[i]],
@@ -303,38 +293,40 @@
             } else {
                 return callback()
             }
-
-            chrome.tabs.query(
-                {
-                    active: true,
-                    currentWindow: true
-                },
+            Browser.getActiveTab(
                 function (tab) {
-                    if (tab.length) {
-                        if (tab[0].url.indexOf('netflix.com') == -1) {
+                    if (tab) {
+                        if (tab.url.indexOf('netflix.com') == -1) {
                             return;
                         }
 
-                        var _url = tab[0].url.split('?')[0];
+                        var _url = tab.url.split('?')[0];
 
-                        _rules_array.push({
-                            tabId: tab.id,
-                            showId: _url.substr(_url.lastIndexOf('/') + 1)
-                        });
+                        var _found = false;
 
-                        Storage.set("rulesArray", _rules_array)
-                        if (tab[0].url.indexOf('netflix.com') > -1) {
-                            // NO TAB
+                        for (var i = 0; i < _rules_array.length; i++) {
+                            if (_rules_array[i].showId == _url.substr(_url.lastIndexOf('/') + 1)) {
+                                _found = true;
+                            }
+                        }
+
+                        if (!_found && _url.substr(_url.lastIndexOf('/') + 1) != 0) {
+                            _rules_array.push({
+                                tabId: tab.id,
+                                showId: _url.substr(_url.lastIndexOf('/') + 1)
+                            });
+                            Storage.set("rulesArray", _rules_array)
+                            if (tab.url.indexOf('netflix.com') > -1) {
+                                // NO TAB
+                            }
                         }
                     }
                 }
             );
-
             Storage.set(package_id, changed_package);
 
-            Runtime = require('./runtime').Runtime;
             Runtime.restart();
-            return callback()
+            callback()
         };
 
         /**
@@ -354,7 +346,7 @@
             if (!api_key) {
                 return callback({
                     success: false,
-                    message: "plugin inactive"
+                    message: "plugin_inactive"
                 });
             }
             return Browser.xhr(packageUrl, 'GET', function (packageData) {
@@ -436,10 +428,12 @@
             var Runtime, installedPackages;
             Storage.remove(key);
             installedPackages = Storage.get('proxmate_installed_packages');
+            if (!installedPackages) {
+                installedPackages = {}
+            }
             delete installedPackages[key];
             Storage.set('proxmate_installed_packages', installedPackages);
-            //Runtime = require('./runtime').Runtime;
-            return //Runtime.restart();
+            Runtime.restart();
         };
 
         /**
@@ -470,23 +464,19 @@
             netflix_countries = Storage.get('netflix_countries');
             netflix_package = Storage.get(netflix_countries.id);
 
-            netflix_package.country = country.short_hand
+            netflix_package.country = country.short_hand;
             netflix_countries.selected = country.short_hand;
 
             Storage.set('netflix_countries', netflix_countries);
             Storage.set(netflix_countries.id, netflix_package);
 
-            chrome.tabs.query(
-                {
-                    active: true,
-                    currentWindow: true
-                },
+            Browser.getActiveTab(
                 function (tab) {
                     if (tab) {
-                        if (tab[0].url.indexOf('netflix.com') == -1) {
+                        if (tab.url.indexOf('netflix.com') == -1) {
                             Browser.createTab('http://netflix.com/')
                         } else {
-                            chrome.tabs.update(tab[0].id, {url: "https://netflix.com"});
+                            Browser.updateTab(tab, "https://netflix.com");
                         }
                     }
                 }

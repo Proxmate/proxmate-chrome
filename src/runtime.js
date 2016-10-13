@@ -1,15 +1,6 @@
 (function () {
     var Browser, PackageManager, ProxyManager, Runtime, ServerManager, Storage, Config, Status, MessageManager;
 
-    PackageManager = require('./package-manager').PackageManager;
-    ServerManager = require('./server-manager').ServerManager;
-    ProxyManager = require('./proxy-manager').ProxyManager;
-    Storage = require('./storage').Storage;
-    Browser = require('./browser').Browser;
-    Config = require('./config').Config;
-    Status = require('./status').Status;
-    MessageManager = require('./message-manager').MessageManager;
-
     Runtime = (function () {
         function Runtime() {
         }
@@ -19,8 +10,8 @@
 
             has_run = Storage.get('has_run');
 
-            if(has_run) {
-                return
+            if (has_run) {
+                return;
             }
 
             server = Config.get('primary_server');
@@ -36,12 +27,22 @@
 
         Runtime.prototype.init = function () {
             var api_key, self = this;
+
+            PackageManager = require('./package-manager').PackageManager;
+            ServerManager = require('./server-manager').ServerManager;
+            ProxyManager = require('./proxy-manager').ProxyManager;
+            Storage = require('./storage').Storage;
+            Browser = require('./browser').Browser;
+            Config = require('./config').Config;
+            Status = require('./status').Status;
+            MessageManager = require('./message-manager').MessageManager;
+
             api_key = Storage.get('api_key');
             Storage.remove('proxmate_server_config');
-            if(api_key) {
+            if (api_key) {
                 Browser.setPopup("pages/popup/index.html");
             } else {
-                chrome.browserAction.onClicked.addListener(this.checkApi);
+                Browser.iconOnClick(this.checkApi)
                 self.install(function () {
                 })
             }
@@ -51,7 +52,7 @@
             var server, requestActivationUrl;
             server = Config.get('primary_server');
 
-            requestActivationUrl = "" + server + "api/user/activation/require/?api_v=" + chrome.runtime.getManifest().version;
+            requestActivationUrl = "" + server + "api/user/activation/require/?api_v=" + Browser.getExtensionVersion();
 
             Browser.ajax.POST(
                 requestActivationUrl,
@@ -69,7 +70,7 @@
             var server, confirmActivationUrl, uninstallUrl, self;
             self = this;
             server = Config.get('primary_server');
-            confirmActivationUrl = "" + server + "api/user/confirm/" + key + '/?api_v=' + chrome.runtime.getManifest().version;
+            confirmActivationUrl = "" + server + "api/user/confirm/" + key + '/?api_v=' + Browser.getExtensionVersion();
             uninstallUrl = "" + server + "uninstall/" + key + '/';
             Browser.xhr(confirmActivationUrl, 'GET', function (data) {
                 if (!data.success) {
@@ -103,16 +104,16 @@
          */
 
         Runtime.prototype.start = function () {
-            var globalStatus, pac, packages, servers, apiKey;
-            apiKey = Storage.get('api_key');
+            var globalStatus, pac, packages, servers, api_key;
+            api_key = Storage.get('api_key');
             globalStatus = Storage.get('proxmate_global_status');
-            if (!globalStatus || !apiKey) {
+            if (!globalStatus || !api_key) {
                 this.stop();
                 return;
             }
-            Browser.setIcon("ressources/images/icon48.png");
 
-
+            Browser.generateButtons();
+            Browser.setIcon("ressources/images/icon48.png", function () {});
             // get all packages
             packages = PackageManager.getInstalledPackages();
             // retrieve new messages
@@ -150,11 +151,11 @@
 
             this.stop();
 
-            Browser.setIcon("ressources/images/icon48.png");
             return ServerManager.init((function (_this) {
                 return function () {
                     PackageManager.init();
-                    return _this.start();
+                    _this.start();
+
                 };
             })(this));
         };
@@ -165,7 +166,7 @@
          */
 
         Runtime.prototype.stop = function () {
-            Browser.setIcon("ressources/images/icon48_grey.png");
+            Browser.setIcon("ressources/images/icon48_grey.png", function () {});
             return ProxyManager.clearProxy();
         };
 

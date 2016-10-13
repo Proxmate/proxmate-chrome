@@ -1,8 +1,6 @@
 (function () {
     var Browser, Storage;
 
-    Browser = require('./browser').Browser;
-
     Storage = (function () {
         function Storage() {
         }
@@ -12,6 +10,8 @@
         Storage.prototype.copyInterval = null;
 
         Storage.prototype.init = function (callback) {
+            Browser = require('./browser').Browser;
+
             return this.copyFromChromeStorage((function (_this) {
                 return function () {
                     var globalStatus;
@@ -30,8 +30,8 @@
          */
 
         Storage.prototype.copyIntoChromeStorage = function () {
-            clearTimeout(this.copyInterval);
-            return this.copyInterval = setTimeout((function (_this) {
+            Browser.clearTimeout(this.copyInterval);
+            return this.copyInterval = Browser.setTimeout((function (_this) {
                 return function () {
                     return Browser.writeIntoStorage(_this.internStorage);
                 };

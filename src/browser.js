@@ -1,7 +1,8 @@
 (function () {
-    var $, Browser, Chrome;
+    var $, Browser, Chrome, PackageManager;
 
     Chrome = require('./chrome').Chrome;
+    PackageManager = require('./package-manager').PackageManager;
 
     $ = require('../bower_components/jquery/dist/jquery.js');
 
@@ -10,6 +11,7 @@
         }
 
         Browser.prototype.init = function () {
+            PackageManager = require('./package-manager').PackageManager;
         };
 
 
@@ -24,6 +26,48 @@
             });
         };
 
+
+        /**
+         * Opens url in a new tab
+         * @param {String} url the url to open
+         */
+
+        Browser.prototype.getActiveTab = function (callback) {
+            Chrome.tabs.query({
+                active: true,
+                currentWindow: true
+            }, function(tab) {
+                callback(tab[0])
+            });
+        };
+
+        Browser.prototype.queryTabs = function (query, callback) {
+            Chrome.tabs.query({
+                url: "*://*" + query + "*"
+            }, function(tabs) {
+                callback(tabs)
+            })
+        };
+
+
+        Browser.prototype.onTabUpdate = function () {
+            var listener = function (id, info, tabObject) {
+                PackageManager.checker(id, info, tabObject)
+            };
+
+            if (!chrome.tabs.onUpdated.hasListener(listener)) {
+                chrome.tabs.onUpdated.addListener(listener);
+            }
+        };
+
+        /**
+         * Opens url in a new tab
+         * @param {String} url the url to open
+         */
+
+        Browser.prototype.updateTab = function (tab, url) {
+            Chrome.tabs.update(tab.id, {url: url});
+        };
 
         /**
          * Sets browser wide proxy to autoconfig
@@ -61,9 +105,11 @@
          * @param {string} iconUrl the url for the icon
          */
 
-        Browser.prototype.setIcon = function (iconUrl) {
+        Browser.prototype.setIcon = function (iconUrl, callback) {
             return Chrome.browserAction.setIcon({
-                path: iconUrl
+                path: iconUrl,
+            }, function(){
+                callback()
             });
         };
 
@@ -89,6 +135,18 @@
             return Chrome.browserAction.setBadgeText({
                 text: text
             });
+        };
+
+
+        /**
+         * Sets the text for the icon (if possible)
+         * @param {string} text the text to set
+         */
+
+        Browser.prototype.getIcontext = function (callback) {
+            Chrome.browserAction.getBadgeText({}, function (value) {
+                callback(value)
+            })
         };
 
 
@@ -169,7 +227,29 @@
         Browser.prototype.ajax = {};
 
 
-         /**
+        /**
+         * Performs a GET xmlhttprequest
+         * @param  {string} url             the url to request
+         * @param  {Function} successCallback callback
+         * @param  {Function} errorCallback   callback
+         */
+
+        Browser.prototype.ajax.GET = function (url, successCallback, errorCallback) {
+            if (successCallback == null) {
+                successCallback = function () {
+                };
+            }
+            if (errorCallback == null) {
+                errorCallback = function () {
+                };
+            }
+            return $.ajax(url, {
+                success: successCallback,
+                error: errorCallback
+            });
+        };
+
+        /**
          * Performs a PUT xmlhttprequest
          * @param  {string} url             the url to request
          * @param  {object} data            data to be sent to server
@@ -195,7 +275,7 @@
         };
 
 
-         /**
+        /**
          * Performs a POST xmlhttprequest
          * @param  {string} url             the url to request
          * @param  {object} data            data to be sent to server
@@ -218,6 +298,52 @@
                 success: successCallback,
                 error: errorCallback
             });
+        };
+
+
+        /**
+         * wrapper for setTimeout function
+         * @param {Function} callback [description]
+         * @param {int}   ms       number
+         */
+
+        Browser.prototype.setTimeout = function (_function, ms) {
+            if (ms == null) {
+                ms = 0
+            }
+            return setTimeout(_function, ms);
+        };
+
+
+        /**
+         * Wrapper for clearInterval function
+         * @param  {Object} timeoutId timeout
+         */
+
+        Browser.prototype.clearTimeout = function (timeoutId) {
+            clearTimeout(timeoutId)
+        };
+
+
+        Browser.prototype.generateButtons = function () {
+            return true;
+        };
+
+        Browser.prototype.setInterval = function (interval_function, time) {
+            setInterval(interval_function, time)
+        };
+
+        /**
+         * Get extension id
+         */
+
+
+        Browser.prototype.getExtensionVersion = function () {
+            return Chrome.runtime.getManifest().version
+        };
+
+        Browser.prototype.iconOnClick = function (listener) {
+            Chrome.browserAction.onClicked.addListener(listener);
         };
 
         return Browser;

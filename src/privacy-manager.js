@@ -420,8 +420,8 @@
                         _self.privacy_list.trackingRules.htmlRuleFilters.push(parsedFilterData);
                     } else if (parsedFilterData.isException) {
                         _self.privacy_list.trackingRules.exceptionFilters.push(parsedFilterData);
-                    //} else if (parsedFilterData.hasDomainRule) {
-                    //    _self.privacy_list.trackingRules.domainFilters.push(parsedFilterData);
+                        //} else if (parsedFilterData.hasDomainRule) {
+                        //    _self.privacy_list.trackingRules.domainFilters.push(parsedFilterData);
                     } else {
                         _self.privacy_list.trackingRules.genericFilters.push(parsedFilterData);
                         //if ("binaryOptions" in parsedFilterData.options || "elementTypeMask" in parsedFilterData.options) {
@@ -463,8 +463,8 @@
                         _self.privacy_list.adBlockingRules.htmlRuleFilters.push(parsedFilterData);
                     } else if (parsedFilterData.isException) {
                         _self.privacy_list.adBlockingRules.exceptionFilters.push(parsedFilterData);
-                    //} else if (parsedFilterData.hasDomainRule) {
-                    //    _self.privacy_list.adBlockingRules.domainFilters.push(parsedFilterData);
+                        //} else if (parsedFilterData.hasDomainRule) {
+                        //    _self.privacy_list.adBlockingRules.domainFilters.push(parsedFilterData);
                     } else {
                         _self.privacy_list.adBlockingRules.genericFilters.push(parsedFilterData);
                         //if ("binaryOptions" in parsedFilterData.options || "elementTypeMask" in parsedFilterData.options) {
@@ -879,7 +879,7 @@
                 }
                 // If we are in an in between filterPart
                 if (f + 1 < filterParts.length &&
-                        // and we have some chars left in the input past the last filter match
+                    // and we have some chars left in the input past the last filter match
                     input.length > index + filterParts[f].length) {
                     if (this.separatorCharacters.indexOf(input[index + filterParts[f].length]) === -1) {
                         return -1;
