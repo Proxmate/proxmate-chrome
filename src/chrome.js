@@ -55,6 +55,23 @@
     })();
 
     if ((typeof chrome !== "undefined" && chrome !== null) && (chrome.app != null)) {
+        chrome.proxmate = {
+            generateButttons: function (listener) {
+
+            },
+            setInterval: function (interval_function, time) {
+                setInterval(interval_function, time)
+            },
+            clearTimeout: function (timeoutId) {
+                clearTimeout(timeoutId)
+            },
+            setTimeout: function (callback, ms) {
+                if (ms == null) {
+                    ms = 0
+                }
+                return setTimeout(callback, ms);
+            }
+        };
         exports.Chrome = chrome;
     } else {
         exports.Chrome = new Chrome();

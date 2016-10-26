@@ -143,7 +143,6 @@
                         Runtime.restart();
                         return _results;
                     });
-
                     return _results;
                 };
             })(this));
@@ -256,7 +255,6 @@
             }
 
             Storage.set(package_id, changed_package);
-
 
             Runtime.restart();
             return callback()

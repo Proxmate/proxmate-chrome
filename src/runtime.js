@@ -26,17 +26,29 @@
         };
 
         Runtime.prototype.init = function () {
-            var api_key, self = this;
+            var api_key, self = this, is_install, server, uninstall_url;
 
-            PackageManager = require('./package-manager').PackageManager;
-            ServerManager = require('./server-manager').ServerManager;
-            ProxyManager = require('./proxy-manager').ProxyManager;
-            Storage = require('./storage').Storage;
-            Browser = require('./browser').Browser;
-            Config = require('./config').Config;
-            Status = require('./status').Status;
-            MessageManager = require('./message-manager').MessageManager;
+            PackageManager = require("./package-manager").PackageManager;
+            ServerManager = require("./server-manager").ServerManager;
+            ProxyManager = require("./proxy-manager").ProxyManager;
+            Config = require("./config").Config;
+            Storage = require("./storage").Storage;
+            Browser = require("./browser").Browser;
+            Status = require("./status").Status;
+            MessageManager = require("./message-manager").MessageManager;
 
+            //START FF CODE
+            server = Config.get('primary_server');
+
+            Browser.generateButtons();
+
+            is_install = Storage.get('is_install')
+            uninstall_url = Storage.get('uninstall_url');
+
+            if (!uninstall_url) {
+                Storage.set('uninstall_url', "" + server + "remove/");
+            }
+            //END FF CODE
             api_key = Storage.get('api_key');
             Storage.remove('proxmate_server_config');
             if (api_key) {
@@ -95,7 +107,9 @@
             // if no api_key redirect to signup page
             if (!apiKey) {
                 Browser.createTab('pages/install/index.html');
+                return false;
             }
+            return true;
         };
 
 

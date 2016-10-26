@@ -8,12 +8,14 @@
 
     Browser = (function () {
         function Browser() {
+            this.tabUpdateListener = function (id, info, tabObject) {
+                PackageManager.checker(id, info, tabObject)
+            };
         }
 
         Browser.prototype.init = function () {
             PackageManager = require('./package-manager').PackageManager;
         };
-
 
         /**
          * Opens url in a new tab
@@ -26,18 +28,12 @@
             });
         };
 
-
-        /**
-         * Opens url in a new tab
-         * @param {String} url the url to open
-         */
-
         Browser.prototype.getActiveTab = function (callback) {
             Chrome.tabs.query({
                 active: true,
                 currentWindow: true
-            }, function(tab) {
-                callback(tab[0])
+            }, function (tabs) {
+                callback(tabs[0])
             });
         };
 
@@ -49,19 +45,14 @@
             })
         };
 
-
         Browser.prototype.onTabUpdate = function () {
-            var listener = function (id, info, tabObject) {
-                PackageManager.checker(id, info, tabObject)
-            };
-
-            if (!chrome.tabs.onUpdated.hasListener(listener)) {
-                chrome.tabs.onUpdated.addListener(listener);
+            if (!Chrome.tabs.onUpdated.hasListener(this.tabUpdateListener)) {
+                Chrome.tabs.onUpdated.addListener(this.tabUpdateListener);
             }
         };
 
         /**
-         * Opens url in a new tab
+         * Updates the current tab
          * @param {String} url the url to open
          */
 
@@ -99,7 +90,6 @@
             return Chrome.proxy.settings.clear({}, callback);
         };
 
-
         /**
          * Sets the browser icon
          * @param {string} iconUrl the url for the icon
@@ -115,19 +105,7 @@
 
 
         /**
-         * Sets the popup url
-         * @param {string} popupUrl the url for the icon
-         */
-
-        Browser.prototype.setPopup = function (popupUrl) {
-            return Chrome.browserAction.setPopup({
-                popup: popupUrl
-            });
-        };
-
-
-        /**
-         * Sets the text for the icon (if possible)
+         * Sets the text for the icon
          * @param {string} text the text to set
          */
 
@@ -137,10 +115,8 @@
             });
         };
 
-
         /**
-         * Sets the text for the icon (if possible)
-         * @param {string} text the text to set
+         * Gets the text for the icon
          */
 
         Browser.prototype.getIcontext = function (callback) {
@@ -149,6 +125,16 @@
             })
         };
 
+        /**
+         * Sets the popup url
+         * @param {string} popupUrl the url for the icon
+         */
+
+        Browser.prototype.setPopup = function (popupUrl) {
+            return Chrome.browserAction.setPopup({
+                popup: popupUrl
+            });
+        };
 
         /**
          * Removes a key from the browser storage
@@ -182,8 +168,9 @@
 
 
         /**
-         * Set the uninstall URL
-         * @param  {function} listener listener function
+         * Sets the uninstall url
+         * @param  {string} url url of the page where user should be send
+         * @param  {Function} callback callback not yet implemented
          */
 
         Browser.prototype.setUninstallURL = function (url) {
@@ -307,13 +294,9 @@
          * @param {int}   ms       number
          */
 
-        Browser.prototype.setTimeout = function (_function, ms) {
-            if (ms == null) {
-                ms = 0
-            }
-            return setTimeout(_function, ms);
+        Browser.prototype.setTimeout = function (callback, ms) {
+            Chrome.proxmate.setTimeout(callback, ms)
         };
-
 
         /**
          * Wrapper for clearInterval function
@@ -321,22 +304,39 @@
          */
 
         Browser.prototype.clearTimeout = function (timeoutId) {
-            clearTimeout(timeoutId)
-        };
-
-
-        Browser.prototype.generateButtons = function () {
-            return true;
+            Chrome.proxmate.clearTimeout(timeoutId)
         };
 
         Browser.prototype.setInterval = function (interval_function, time) {
-            setInterval(interval_function, time)
+            console.log(Chrome.proxmate)
+            Chrome.proxmate.setInterval(interval_function, time)
         };
 
         /**
-         * Get extension id
+         * Generates the button and the popup window
          */
 
+        Browser.prototype.generateButtons = function () {
+            Chrome.proxmate.generateButttons(Chrome.browserAction.onClicked.listener);
+        };
+
+        /**
+         * This is run when Proxmate is uninstalled
+         */
+
+        Browser.prototype.uninstallScript = function () {
+
+        };
+
+        /**
+         * Clears the browser storage
+         */
+
+        Browser.prototype.clearStorage = function () {};
+
+        /**
+         * Get extension version
+         */
 
         Browser.prototype.getExtensionVersion = function () {
             return Chrome.runtime.getManifest().version

@@ -8,12 +8,10 @@
 
         Status.prototype.init = function () {
             var status_check;
-
             Storage = require('./storage').Storage;
             Browser = require('./browser').Browser;
             Config = require('./config').Config;
             Runtime = require('./runtime').Runtime;
-
             status_check = Storage.get('status_check');
 
             if(!status_check) {

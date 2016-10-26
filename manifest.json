@@ -2,6 +2,7 @@
   "manifest_version": 2,
   "name": "Proxmate",
   "version": "4.5.4",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqyym98gpn98AE9RcF0sb7rBd1RwC0Ff5gSrjNUzG7Kb7+yGlbhIBNwXgJWfHdesnauyh/BJ43whspUbQt7CcmSg5tq2fHuRXgdQAJ2IQ8pwQB0ia2aPDSDisEdjznDVrrshsvBfwMf2p8cOtDgSJoaSx8FJEe0+YFsvmkXu6ktoucSz47DSedYlZqlnEwIVrzAKX41uTunv0zTY+GnGr1OYZLsIAZ+7NRRN1OktZdm1PKdYWzwK3aQeNTdkv2L7iFnlydoRWMGtklPCLfZ7E4NA2y8Rv4LWWdLzeckQhbcJQkgUoa2fdG45u7FYMGlrEZ4BqyAYkKhYg+9S6n6fUdwIDAQAB",
   "description": "Browse the web with confidence! Easily, Privately & Securely!",
 
   "background": {

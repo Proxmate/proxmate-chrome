@@ -300,7 +300,6 @@
                         return;
                     }
 
-
                     for (var i = 0; i < data.messages.length; i++) {
                         var _isOld = false;
 

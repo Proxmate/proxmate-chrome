@@ -33,7 +33,6 @@
                                     contentScript = _ref1[_k];
                                     regexObject = new RegExp(contentScript.matches, "g");
                                     if (path.search(regexObject) !== -1) {
-
                                         _results2.push(eval(atob(contentScript.script)));
                                     } else {
                                         _results2.push(void 0);

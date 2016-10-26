@@ -28,7 +28,7 @@
         return ProxMate
     }();
 
-    window.ProxMate = new ProxMate
+    window.ProxMate = new ProxMate;
 
     // specific behavior for confirmation of the account
     if (-1 !== location.href.indexOf("confirm/")) {
